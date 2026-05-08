@@ -48,21 +48,23 @@ Notebook adımları:
 
 ## 📊 Müşteri Veri Formatı (Toplu Sipariş)
 
-Toplu üretim için `inputs/order.csv` veya `inputs/order.json` dosyasını şu formatta hazırlamalısınız:
+Toplu üretim için `inputs/order.csv` dosyasını hazırlamak artık çok daha kolay. Teknik detaylarla uğraşmanıza gerek yok, sistemimiz en iyi ayarları (Premium) otomatik seçer.
 
 | Sütun (Key) | Açıklama | Örnek |
 | :--- | :--- | :--- |
-| **words** | QR kodun içeriği (URL/Metin) | `https://google.com` |
-| **save_name** | Dosya adı (Uzantısıyla birlikte) | `musteri_1.png` |
-| **picture** | Arka plan görsel adı (Opsiyonel) | `logo.png` veya `animasyon.gif` |
-| **colorized** | Renkli mi? (True/False) | `True` |
+| **words** | QR kodun içeriği (URL veya Metin) | `https://google.com` |
+| **picture** | Logo veya GIF dosya adı (Opsiyonel) | `logo.png` veya `animasyon.gif` |
 
 ### Örnek CSV içeriği:
 ```csv
-words,save_name,picture,colorized
-https://site1.com,qr1.png,logo.png,True
-https://site2.com,qr2.gif,dance.gif,True
+words,picture
+https://site1.com,logo.png
+https://site2.com,dance.gif
+https://site3.com,
 ```
+
+> [!TIP]
+> **Akıllı Sistem:** Eğer bir görsel (`picture`) eklerseniz, sistem otomatik olarak renklendirme (`colorized=True`) yapar ve en yüksek kalite seviyesini (`Level=H`) seçer. Dosya isimleri de içeriğe göre otomatik oluşturulur.
 
 ---
 
