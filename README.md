@@ -18,31 +18,47 @@ Amazing-QR (amzqr), standart QR kodlarının ötesine geçerek; sanatsal, renkli
 
 ---
 
-## 🛠️ Kurulum ve Kullanım
+## 🛠️ Çalışma Mantığı ve Kullanım
 
-### 1. Docker ile Yerel Kullanım (Kesin Kural: Sadece Docker)
-Yerel bilgisayarınızda Python veya kütüphane kurulumu yapmanıza gerek yoktur. Her şey Docker konteyneri içinde çalışır.
+Bu proje iki ana platformda çalışmak üzere optimize edilmiştir: **Yerel (Local)** ve **Bulut (Google Colab)**. Her iki ortamın kurulum ve çalışma mantığı birbirinden farklıdır.
+
+### 1. Yerel Kullanım (Kesin Kural: Sadece Docker)
+Yerel bilgisayarınızda (Windows, macOS veya Linux) projenin tek ve resmi çalışma yöntemi **Docker**'dır. 
+
+- **Neden Docker?** Görüntü işleme kütüphaneleri (OpenCV, ImageIO vb.) sistem bağımlılıkları gerektirir. Docker, tüm bu karmaşık yapıyı bir "paket" halinde sunarak "benim bilgisayarımda çalışmadı" sorununu ortadan kaldırır.
+- **⚠️ Kritik Uyarı:** Yerel makinenizde **`pip` ile kurulum yapılmaz**. Python veya kütüphane bağımlılıklarını manuel olarak kurmanıza gerek yoktur. Her şey izole bir konteyner içinde çalışır.
+
+**Gereksinimler:** Sadece [Docker](https://www.docker.com/get-started) kurulu olmalıdır.
+
+#### A) Web Arayüzü (Gradio) - 🚀 **Önerilen / En Kolay Yöntem**
+Hiçbir komut parametresiyle uğraşmadan, tarayıcı üzerinden CSV yüklemek, görselleri sürükle-bırak yapmak ve sonuçları canlı görmek için bu yöntemi kullanın:
+
+```bash
+docker run -p 7860:7860 -v $(pwd)/inputs:/app/inputs -v $(pwd)/output:/app/output amazing-qr
+```
+Komutu çalıştırdıktan sonra tarayıcınızda şu adresi açın: `http://localhost:7860`
+
+#### B) Komut Satırı (CLI) Kullanımı
+Eğer doğrudan terminal üzerinden işlem yapmak isterseniz:
 
 **Tekil QR Üretimi:**
 ```bash
-docker run -v $(pwd)/output:/app/output amazing-qr "https://github.com/orioninsist" -n my_qr.png
+docker run -v $(pwd)/output:/app/output amazing-qr "https://github.com/orioninsist" -n my_qr.png --entrypoint amzqr
 ```
 
 **Toplu (Batch) QR Üretimi:**
-`inputs/order.csv` veya `order.json` dosyanızı hazırlayın ve şu komutu çalıştırın:
+`inputs/order.csv` dosyanızı hazırlayın ve şu komutu çalıştırın:
 ```bash
 docker run --entrypoint python -v $(pwd)/inputs:/app/inputs -v $(pwd)/output:/app/output amazing-qr batch_process.py
 ```
 
-### 2. Google Colab ile Kullanım (Bulut Üzerinde)
-Google Colab üzerinde Docker kullanılmaz. Notebook, projeyi doğrudan GitHub'dan klonlayarak çalıştırır.
+### 2. Google Colab (Bulut Üzerinde Notebook)
+Google Colab, Docker çalıştırma imkanı olmayan ancak hazır bir Python çalışma alanı sunan bir platformdur. Bu ortamda çalışma mantığı "klasik yöntemdir":
+
+- **Mantık:** Proje GitHub'dan klonlanır, bağımlılıklar geçici olarak `pip` ile yüklenir ve `.ipynb` dosyası üzerinden interaktif bir şekilde çalıştırılır.
+- **Kullanım:** Docker kurmak istemeyen veya GPU gücünden (varsa) yararlanmak isteyen kullanıcılar için tasarlanmıştır.
 
 👉 **[Amazing-QR Google Colab Notebook](amazing_qr_colab.ipynb)**
-
-Notebook adımları:
-1. `git clone https://github.com/orioninsist/amazing-qr.git` komutu ile projeyi indirir.
-2. Gerekli kütüphaneleri yükler.
-3. Form üzerinden tekil veya `batch_process.py` ile toplu üretim yapar.
 
 ---
 
