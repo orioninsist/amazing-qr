@@ -98,3 +98,7 @@ MANIFEST
 .vscode
 
 inputs/assets/*
+
+inputs/assets/*
+
+outputs/*
