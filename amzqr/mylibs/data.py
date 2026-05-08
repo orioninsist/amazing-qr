@@ -13,7 +13,7 @@ def encode(ver, ecl, str):
           
     ver, mode = analyse(ver, ecl, str)
     
-    print('line 16: mode:', mode)
+    # print('line 16: mode:', mode)
     
     code = mode_indicator[mode] + get_cci(ver, mode, str) + mode_encoding[mode](str)
     
@@ -53,7 +53,7 @@ def analyse(ver, ecl, str):
         mode = 'byte'
     
     m = mindex[mode]
-    l = len(str)
+    l = len(str.encode('utf-8')) if mode == 'byte' else len(str)
     for i in range(40):
         if char_cap[ecl][i][m] > l:
             ver = i + 1 if i+1 > ver else ver
@@ -90,8 +90,8 @@ def alphanumeric_encoding(str):
     
 def byte_encoding(str):
     code = ''
-    for i in str:
-        c = bin(ord(i.encode('iso-8859-1')))[2:]
+    for b in str.encode('utf-8'):
+        c = bin(b)[2:]
         c = '0'*(8-len(c)) + c
         code += c
     return code
@@ -108,7 +108,8 @@ def get_cci(ver, mode, str):
     else:
         cci_len = (14, 13, 16, 12)[mindex[mode]]
         
-    cci = bin(len(str))[2:]
+    length = len(str.encode('utf-8')) if mode == 'byte' else len(str)
+    cci = bin(length)[2:]
     cci = '0' * (cci_len - len(cci)) + cci
     return cci
     

@@ -3,7 +3,7 @@
 
 import os
 from amzqr.mylibs import theqrmodule
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageFilter, ImageOps
    
 # Positional parameters
 #   words: str
@@ -21,7 +21,7 @@ from PIL import Image
 # See [https://github.com/orioninsist/amazing-qr] for more details!
 def run(words, version=1, level='H', picture=None, colorized=False, contrast=1.0, brightness=1.0, save_name=None, save_dir=os.getcwd()):
 
-    supported_chars = r"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ··,.:;+-*/\~!@#$%^&`'=<>[]()?_{}|"
+    supported_chars = r"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ··,.:;+-*/\~!@#$%^&`'=<>[]()?_{}|çğışüöÇĞİŞÜÖ"
 
 
     # check every parameter
@@ -47,6 +47,45 @@ def run(words, version=1, level='H', picture=None, colorized=False, contrast=1.0
     if not os.path.isdir(save_dir):
         raise ValueError('Wrong save_dir! Input a existing-directory!')
     
+    def _preprocess_image(img, is_gif=False):
+        # 1. Auto-crop to square (Center Crop)
+        w, h = img.size
+        if w != h:
+            min_dim = min(w, h)
+            left = (w - min_dim) / 2
+            top = (h - min_dim) / 2
+            right = (w + min_dim) / 2
+            bottom = (h + min_dim) / 2
+            img = img.crop((left, top, right, bottom))
+        
+        # 2. Optimization and Quality enhancement
+        if is_gif:
+            if img.size[0] > 500:
+                img.thumbnail((500, 500), Image.LANCZOS)
+        else:
+            if img.size[0] < 500:
+                img = img.resize((500, 500), Image.LANCZOS)
+            elif img.size[0] > 1000:
+                img.thumbnail((1000, 1000), Image.LANCZOS)
+        
+        # 3. Sharpening and Contrast
+        img = img.filter(ImageFilter.SHARPEN)
+        try:
+            # Auto-contrast to make it pop
+            if img.mode != 'RGBA':
+                img = img.convert('RGBA')
+            rgb_part = img.convert('RGB')
+            enhanced_rgb = ImageOps.autocontrast(rgb_part, cutoff=0.5)
+            img.paste(enhanced_rgb, (0,0))
+        except:
+            pass # Fallback if autocontrast fails
+            
+        # 4. Premium Look: Add a subtle white border/glow for better separation
+        border_size = int(img.size[0] * 0.02)
+        new_size = (img.size[0] + 2*border_size, img.size[1] + 2*border_size)
+        new_img = Image.new("RGBA", new_size, (255, 255, 255, 255))
+        new_img.paste(img, (border_size, border_size), img)
+        return new_img
         
     def combine(ver, qr_name, bg_name, colorized, contrast, brightness, save_dir, save_name=None):
         from amzqr.mylibs.constant import alig_location
@@ -60,9 +99,9 @@ def run(words, version=1, level='H', picture=None, colorized=False, contrast=1.0
         bg0 = ImageEnhance.Brightness(bg0).enhance(brightness)
 
         if bg0.size[0] < bg0.size[1]:
-            bg0 = bg0.resize((qr.size[0]-24, (qr.size[0]-24)*int(bg0.size[1]/bg0.size[0])))
+            bg0 = bg0.resize((qr.size[0]-24, int((qr.size[0]-24)*(bg0.size[1]/bg0.size[0]))), Image.LANCZOS)
         else:
-            bg0 = bg0.resize(((qr.size[1]-24)*int(bg0.size[0]/bg0.size[1]), qr.size[1]-24))    
+            bg0 = bg0.resize((int((qr.size[1]-24)*(bg0.size[0]/bg0.size[1])), qr.size[1]-24), Image.LANCZOS)    
             
         bg = bg0 if colorized else bg0.convert('1')
         
@@ -99,17 +138,26 @@ def run(words, version=1, level='H', picture=None, colorized=False, contrast=1.0
              
             im = Image.open(picture)
             duration = im.info.get('duration', 0)
-            im.save(os.path.join(tempdir, '0.png'))
-            while True:
+            
+            # Preprocess the first frame and get its size
+            frame = im.convert('RGBA')
+            frame = _preprocess_image(frame, is_gif=True)
+            frame.save(os.path.join(tempdir, '0.png'))
+            
+            max_frames = 100 # Safety cap for frame count to ensure stability
+            count = 1
+            while count < max_frames:
                 try:
-                    seq = im.tell()
-                    im.seek(seq + 1)
-                    im.save(os.path.join(tempdir, '%s.png' %(seq+1)))
+                    im.seek(im.tell() + 1)
+                    frame = im.convert('RGBA')
+                    frame = _preprocess_image(frame, is_gif=True)
+                    frame.save(os.path.join(tempdir, '%s.png' % count))
+                    count += 1
                 except EOFError:
                     break
             
             imsname = []
-            for s in range(seq+1):
+            for s in range(count):
                 bg_name = os.path.join(tempdir, '%s.png' % s)
                 imsname.append(combine(ver, qr_name, bg_name, colorized, contrast, brightness, tempdir))
             
@@ -117,7 +165,12 @@ def run(words, version=1, level='H', picture=None, colorized=False, contrast=1.0
             qr_name = os.path.join(save_dir, os.path.splitext(os.path.basename(picture))[0] + '_qrcode.gif') if not save_name else os.path.join(save_dir, save_name)
             imageio.mimwrite(qr_name, ims, '.gif', **{ 'duration': duration/1000 })
         elif picture:
-            qr_name = combine(ver, qr_name, picture, colorized, contrast, brightness, save_dir, save_name)
+            bg_img = Image.open(picture).convert('RGBA')
+            bg_img = _preprocess_image(bg_img)
+            # Save preprocessed to temp and use it
+            preprocessed_path = os.path.join(tempdir, 'preprocessed_bg.png')
+            bg_img.save(preprocessed_path)
+            qr_name = combine(ver, qr_name, preprocessed_path, colorized, contrast, brightness, save_dir, save_name)
         elif qr_name:
             qr = Image.open(qr_name)
             qr_name = os.path.join(save_dir, os.path.basename(qr_name)) if not save_name else os.path.join(save_dir, save_name)
