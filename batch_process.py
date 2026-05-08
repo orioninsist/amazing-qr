@@ -60,42 +60,49 @@ def run_batch():
         # --- Smart Defaults ---
         # 1. Version: Auto-detect if missing or invalid
         try:
-            version = int(row.get('version', 1))
+            version_val = row.get('version', 1)
+            version = int(version_val) if version_val and str(version_val).strip() != '' else 1
         except:
             version = 1
             
         # 2. Level: Always 'H' for premium unless specified
         level = row.get('level', 'H')
+        if not level or str(level).strip() == '':
+            level = 'H'
         
         # 3. Picture Handling
         picture_name = row.get('picture', None)
         picture_path = None
-        if picture_name:
-            picture_path = os.path.join(assets_dir, picture_name)
+        if picture_name and str(picture_name).strip() != 'nan' and str(picture_name).strip() != '':
+            picture_path = os.path.join(assets_dir, str(picture_name).strip())
             if not os.path.exists(picture_path):
                 print(f"Warning: Asset {picture_name} not found in {assets_dir}. Skipping picture.")
                 picture_path = None
 
         # 4. Colorized: Default to True if picture exists, False otherwise
         colorized_raw = row.get('colorized', None)
-        if colorized_raw is None or colorized_raw == '':
+        if colorized_raw is None or str(colorized_raw).strip() == '' or str(colorized_raw).strip() == 'nan':
             colorized = True if picture_path else False
         else:
             colorized = str(colorized_raw).lower() == 'true'
 
         # 5. Contrast & Brightness
         try:
-            contrast = float(row.get('contrast', 1.0))
-            brightness = float(row.get('brightness', 1.0))
+            contrast_val = row.get('contrast', 1.0)
+            contrast = float(contrast_val) if contrast_val and str(contrast_val).strip() != '' else 1.0
+            brightness_val = row.get('brightness', 1.0)
+            brightness = float(brightness_val) if brightness_val and str(brightness_val).strip() != '' else 1.0
         except:
             contrast, brightness = 1.0, 1.0
 
         # 6. Save Name: Auto-generate if missing
         save_name = row.get('save_name', None)
-        if not save_name:
-            ext = '.gif' if picture_name and picture_name.lower().endswith('.gif') else '.png'
+        if not save_name or str(save_name).strip() == '' or str(save_name).strip() == 'nan':
+            ext = '.gif' if picture_name and str(picture_name).lower().endswith('.gif') else '.png'
             slug = slugify(words) or f"qr_{idx}"
             save_name = f"{slug}{ext}"
+        else:
+            save_name = str(save_name).strip()
 
         print(f"Processing [{idx}/{len(data)}]: {words} -> {save_name}")
         if picture_path:
