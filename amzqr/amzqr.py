@@ -94,7 +94,8 @@ def run(words, version=1, level='H', picture=None, colorized=False, contrast=1.0
         ver, qr_name = theqrmodule.get_qrcode(version, level, words, tempdir)
 
         if picture and picture[-4:]=='.gif':
-            import imageio
+            # pyrefly: ignore [missing-import]
+            import imageio # type: ignore
              
             im = Image.open(picture)
             duration = im.info.get('duration', 0)
