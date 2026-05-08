@@ -88,6 +88,17 @@ docker run -v $(pwd)/output:/app/output amazing-qr "https://github.com" -n test.
 
 ---
 
+### D. Google Colab Üzerinden Kullanım (Bulut)
+Projeyi hiçbir kurulum yapmadan tarayıcı üzerinden çalıştırmak için `amazing-qr.ipynb` dosyasını Google Colab'da açabilirsiniz.
+
+*   **Dosya Yükleme:** Notebook içindeki "Dosya Yükle" hücresini kullanarak kendi resimlerinizi veya GIF'lerinizi kolayca yükleyebilirsiniz.
+*   **Otomatik Algılama:** Yüklediğiniz dosya otomatik olarak arka plan parametresi olarak seçilir.
+*   **İndirme:** Oluşturulan QR kodlar tek tıkla bilgisayarınıza indirilebilir.
+
+---
+
+---
+
 ## 4. Parametre Detayları
 
 | Parametre | Açıklama | Değer Aralığı / Örnek |
