@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 import setuptools
-
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
-
 setuptools.setup(
     name='amzqr',
     version='0.0.2',
@@ -11,12 +9,12 @@ setuptools.setup(
     description='Generater for amazing QR Codes. Including Common, Artistic and Animated QR Codes.',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author='hw',
-    author_email='xhaowen.xu@gmail.com',
-    url='https://github.com/hwxhw/amazing-qr',
-    download_url='https://github.com/hwxhw/amazing-qr',
+    author='orioninsist',
+    author_email="orioninsist@gmail.com",
+    url='https://github.com/orioninsist/amazing-qr',
+    download_url='https://github.com/orioninsist/amazing-qr',
     project_urls={
-        "Bug Tracker": "https://github.com/hwxhw/amazing-qr/issues",
+        "Bug Tracker": "https://github.com/orioninsist/amazing-qr/issues",
     },
     install_requires=[
         'imageio >= 1.5',

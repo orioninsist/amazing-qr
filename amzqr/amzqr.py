@@ -18,7 +18,7 @@ from PIL import Image
 #   save_name: str, the output filename like 'example.png'
 #   save_dir: str, the output directory
 #
-# See [https://github.com/hwxhw/amazing-qr] for more details!
+# See [https://github.com/orioninsist/amazing-qr] for more details!
 def run(words, version=1, level='H', picture=None, colorized=False, contrast=1.0, brightness=1.0, save_name=None, save_dir=os.getcwd()):
 
     supported_chars = r"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ··,.:;+-*/\~!@#$%^&`'=<>[]()?_{}|"

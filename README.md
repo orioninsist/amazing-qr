@@ -1,10 +1,10 @@
 # Amazing-QR
 
-[![former name](https://img.shields.io/badge/old%20name-MyQR-yellow)](https://pypi.org/project/myqr/) [![PyPI - Downloads](https://img.shields.io/pypi/dm/myqr?label=downloads@myqr)](https://pypi.org/project/myqr/) [![](https://img.shields.io/badge/language-Python-blue)](https://www.python.org/) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/amzqr?logo=python&logoColor=ffffff&label=Python&labelColor=blue&color=ffffff) [![PyPI](https://img.shields.io/pypi/v/amzqr?logo=pypi&logoColor=ffffff&label=PyPI&labelColor=blue)](https://pypi.org/project/amzqr/) ![PyPI - Wheel](https://img.shields.io/pypi/wheel/amzqr) [![PyPI - Downloads](https://img.shields.io/pypi/dm/amzqr)](https://pypi.org/project/amzqr/) [![PyPI - License](https://img.shields.io/pypi/l/amzqr)](https://github.com/x-hw/amazing-qr/blob/master/LICENSE.md) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/x-hw/amazing-qr) ![macos](https://img.shields.io/badge/-macOS-black?logo=macos) ![linux](https://img.shields.io/badge/-Linux-yellow?logo=linux) ![windows](https://img.shields.io/badge/-Windows-blue?logo=windows)
+[![former name](https://img.shields.io/badge/old%20name-MyQR-yellow)](https://pypi.org/project/myqr/) [![PyPI - Downloads](https://img.shields.io/pypi/dm/myqr?label=downloads@myqr)](https://pypi.org/project/myqr/) [![](https://img.shields.io/badge/language-Python-blue)](https://www.python.org/) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/amzqr?logo=python&logoColor=ffffff&label=Python&labelColor=blue&color=ffffff) [![PyPI](https://img.shields.io/pypi/v/amzqr?logo=pypi&logoColor=ffffff&label=PyPI&labelColor=blue)](https://pypi.org/project/amzqr/) ![PyPI - Wheel](https://img.shields.io/pypi/wheel/amzqr) [![PyPI - Downloads](https://img.shields.io/pypi/dm/amzqr)](https://pypi.org/project/amzqr/) [![PyPI - License](https://img.shields.io/pypi/l/amzqr)](https://github.com/orioninsist/amazing-qr/blob/master/LICENSE.md) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/orioninsist/amazing-qr) ![macos](https://img.shields.io/badge/-macOS-black?logo=macos) ![linux](https://img.shields.io/badge/-Linux-yellow?logo=linux) ![windows](https://img.shields.io/badge/-Windows-blue?logo=windows)
 
-[![](https://img.shields.io/badge/GitHub-x.hw-blue?logo=github)](https://github.com/x-hw) [![sponsor](https://img.shields.io/badge/sponsor--pink?logo=github-sponsors&labelColor=pink)](#buy-me-a-coffee)
+[![](https://img.shields.io/badge/GitHub-orioninsist-blue?logo=github)](https://github.com/orioninsist) [![sponsor](https://img.shields.io/badge/sponsor--pink?logo=github-sponsors&labelColor=pink)](#buy-me-a-coffee)
 
-[*转到中文版*](https://github.com/x-hw/amazing-qr/blob/master/README-cn.md)
+[*转到中文版*](https://github.com/orioninsist/amazing-qr/blob/master/README-cn.md)
 
 ## Overview
 
@@ -30,15 +30,15 @@ Generate *common qr-code*,  *artistic qr-code (black & white or colorized)*,  *a
 
 ## Examples
 
-![](https://github.com/x-hw/amazing-qr/blob/master/example/qrs0.jpg)
+![](https://github.com/orioninsist/amazing-qr/blob/master/example/qrs0.jpg)
 
-![](https://github.com/x-hw/amazing-qr/blob/master/example/qrs1.jpg)
+![](https://github.com/orioninsist/amazing-qr/blob/master/example/qrs1.jpg)
 
-![](https://github.com/x-hw/amazing-qr/blob/master/example/qrs2.jpg)
+![](https://github.com/orioninsist/amazing-qr/blob/master/example/qrs2.jpg)
 
-![](https://github.com/x-hw/amazing-qr/blob/master/example/c_qrcode.gif)![](https://github.com/x-hw/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode.gif)
+![](https://github.com/orioninsist/amazing-qr/blob/master/example/c_qrcode.gif)![](https://github.com/orioninsist/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode.gif)
 
-![](https://github.com/x-hw/amazing-qr/blob/master/example/zootopia_qrcode.gif)![](https://github.com/x-hw/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode0.gif)
+![](https://github.com/orioninsist/amazing-qr/blob/master/example/zootopia_qrcode.gif)![](https://github.com/orioninsist/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode0.gif)
 
 ## Install
 
@@ -72,7 +72,7 @@ amzqr Words
 
 #### Common QR-Code
 
-![](https://github.com/x-hw/amazing-qr/blob/master/example/0.png)
+![](https://github.com/orioninsist/amazing-qr/blob/master/example/0.png)
 
 ```markdown
 #1 Words
@@ -114,7 +114,7 @@ amzqr https://github.com   -n github_qr.jpg   -d .../paths/
 
 #### Artistic QR-Code
 
-![](https://github.com/x-hw/amazing-qr/blob/master/example/1.png)![](https://github.com/x-hw/amazing-qr/blob/master/example/2.png)
+![](https://github.com/orioninsist/amazing-qr/blob/master/example/1.png)![](https://github.com/orioninsist/amazing-qr/blob/master/example/2.png)
 
 
 ```markdown
@@ -149,7 +149,7 @@ amzqr https://github.com -p github.jpg [-c] -con 1.5 -bri 1.6
 
 #### Animated GIF QR-Code
 
-![](https://github.com/x-hw/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode.gif)![](https://github.com/x-hw/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode0.gif)
+![](https://github.com/orioninsist/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode.gif)![](https://github.com/orioninsist/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode0.gif)
 
 The only difference from Artistic QR-Code mentioned above is that you should input an image file in the `.gif` format. The you can get your black-and-white or colorful qr-code. Remember that when you use `-n` to customize the output-filename, then the output-filename must end by `.gif`.
 
@@ -195,9 +195,9 @@ Optional parameters
 
 * If the size of the picture is large, you should also choose a **rightly** large `-v` instead of using the default one.
 
-* If part of the picture is transparent, the qr code will look like: ![](https://github.com/x-hw/amazing-qr/blob/master/example/aa.png)
+* If part of the picture is transparent, the qr code will look like: ![](https://github.com/orioninsist/amazing-qr/blob/master/example/aa.png)
 
-  You can change the transparent layer to white, and then it will look like: ![](https://github.com/x-hw/amazing-qr/blob/master/example/a0.png)
+  You can change the transparent layer to white, and then it will look like: ![](https://github.com/orioninsist/amazing-qr/blob/master/example/a0.png)
 
 ## Supported Characters
 
@@ -221,16 +221,11 @@ Optional parameters
 
 ## Buy me a coffee
 
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/x-hw?logo=github-sponsors&labelColor=pink&color=white)](https://github.com/sponsors#regions)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/orioninsist?logo=github-sponsors&labelColor=pink&color=white)](https://github.com/sponsors/orioninsist)
 
-*Since the GitHub Sponsors is unavailable in China yet...*
 
-![wechatpay](https://img.shields.io/badge/-wechat_pay-brightgreen?labelColor=brightgreen&logo=data:image/png;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABILAAASCwAAAAAAAAAAAAAAAAAAGa0aABmtGg4ZrRoOGa0aABmtGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmtGgAZrRpGGa0arBmtGkEZrRobGa0aOBmtGkwZrRpNGa0aORmtGhoZrRoDGa0aAAAAAAAAAAAAAAAAAAAAAAAZrRoAGa0aKBmtGucZrRrwGa0a3BmtGvIZrRr6Ga0a+xmtGvMZrRrYGa0alxmtGjcZrRoCGa0aAAAAAAAZrRoAGa0aBhmtGnMZrRr1Ga0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRroGa0adBmtGgkZrRoAGa0aAhmtGnEZrRr2Ga0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRr/Ga0a/xmtGvgZrRp5Ga0aAxmtGkEZrRrmGa0a/xmtGv8ZrRr+Ga0a8RmtGvsZrRr/Ga0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRr/Ga0a6hmtGkkZrRqlGa0a/xmtGv8ZrRr/Ga0a5RmtGkwZrRpzGa0a3hmtGv8ZrRr/Ga0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRqvGa0a3xmtGv8ZrRr/Ga0a/xmtGpkZrRoDGa0aABmtGicZrRqWGa0a7hmtGv8ZrRr/Ga0a/xmtGv8ZrRr/Ga0a5xmtGusZrRr/Ga0a/xmtGu0ZrRo9Ga0aPBmtGmcZrRohGa0aAxmtGj8ZrRq0Ga0a+BmtGv8ZrRr/Ga0a/xmtGvIZrRrQGa0a/xmtGv8ZrRrLGa0agRmtGukZrRr+Ga0a3RmtGosZrRowGa0aEBmtGlsZrRrNGa0a/RmtGv8ZrRrYGa0agxmtGv0ZrRr/Ga0a+hmtGvsZrRr/Ga0a/xmtGv8ZrRr/Ga0a6hmtGqIZrRpDGa0aJRmtGnsZrRrhGa0ajBmtGiAZrRrHGa0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRr/Ga0a9BmtGrcZrRpdGa0aOxmtGhoZrRoAGa0aPBmtGtcZrRr/Ga0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRr/Ga0a1BmtGiwZrRoAGa0aABmtGgAZrRowGa0arRmtGvQZrRr/Ga0a/xmtGv8ZrRr/Ga0a/xmtGv8ZrRr2Ga0asRmtGjQZrRoAGa0aAAAAAAAZrRoAGa0aABmtGgsZrRpFGa0ajRmtGrsZrRrPGa0azxmtGr0ZrRqQGa0aSBmtGgwZrRoAGa0aAAAAAAAAAAAAAAAAAAAAAAAAAAAAGa0aABmtGgEZrRoKGa0aFBmtGhUZrRoKGa0aARmtGgAAAAAAAAAAAAAAAAAAAAAAz/8AAMAPAADAAwAAgAEAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAgAEAAMADAADgBwAA+B8AAA==)
 
-<img src="https://github.com/x-hw/amazing-qr/blob/master/example/wechatpay.jpg" width = "124" height = "116" alt="wechatpay" align=center />
 
-![alipay](https://img.shields.io/badge/-alipay-blue?logo=alipay&logoColor=ffffff&labelColor=blue)
 
-<img src="https://github.com/x-hw/amazing-qr/blob/master/example/alipay.gif" width = "132" height = "132" alt="alipay" align=center />
 
 🎉🎉🎉 Thanks for your support. 🎉🎉🎉
