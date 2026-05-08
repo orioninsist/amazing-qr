@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  amzqr:
+    build: .
+    image: amazing-qr:latest
+    volumes:
+      - .:/app
+    # The default command will show help, but you can override it
+    # example: docker-compose run --rm amzqr "https://google.com" -n google.png
