@@ -1,231 +1,98 @@
-# Amazing-QR
+# 🚀 Amazing-QR: Sanatsal ve Toplu QR Kod Oluşturucu
 
-[![former name](https://img.shields.io/badge/old%20name-MyQR-yellow)](https://pypi.org/project/myqr/) [![PyPI - Downloads](https://img.shields.io/pypi/dm/myqr?label=downloads@myqr)](https://pypi.org/project/myqr/) [![](https://img.shields.io/badge/language-Python-blue)](https://www.python.org/) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/amzqr?logo=python&logoColor=ffffff&label=Python&labelColor=blue&color=ffffff) [![PyPI](https://img.shields.io/pypi/v/amzqr?logo=pypi&logoColor=ffffff&label=PyPI&labelColor=blue)](https://pypi.org/project/amzqr/) ![PyPI - Wheel](https://img.shields.io/pypi/wheel/amzqr) [![PyPI - Downloads](https://img.shields.io/pypi/dm/amzqr)](https://pypi.org/project/amzqr/) [![PyPI - License](https://img.shields.io/pypi/l/amzqr)](https://github.com/orioninsist/amazing-qr/blob/master/LICENSE.md) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/orioninsist/amazing-qr) ![macos](https://img.shields.io/badge/-macOS-black?logo=macos) ![linux](https://img.shields.io/badge/-Linux-yellow?logo=linux) ![windows](https://img.shields.io/badge/-Windows-blue?logo=windows)
+[![GitHub-orioninsist](https://img.shields.io/badge/GitHub-orioninsist-blue?logo=github)](https://github.com/orioninsist)
+[![License](https://img.shields.io/badge/license-GPLv3-yellow.svg)](https://github.com/orioninsist/amazing-qr/blob/master/LICENSE.md)
+[![Python-Version](https://img.shields.io/badge/Python-3.6+-blue.svg)](https://www.python.org/)
 
-[![](https://img.shields.io/badge/GitHub-orioninsist-blue?logo=github)](https://github.com/orioninsist) [![sponsor](https://img.shields.io/badge/sponsor--pink?logo=github-sponsors&labelColor=pink)](#buy-me-a-coffee)
+Amazing-QR (amzqr), standart QR kodlarının ötesine geçerek; sanatsal, renkli ve hareketli (GIF) QR kodları oluşturmanıza olanak tanıyan güçlü bir araçtır. Bu sürüm, özellikle **toplu üretim (batch processing)** için optimize edilmiştir.
 
-[*转到中文版*](https://github.com/orioninsist/amazing-qr/blob/master/README-cn.md)
+---
 
-## Overview
+## 🌟 Öne Çıkan Özellikler
 
-**Python QR Code Generator**
+- **Sanatsal QR:** İstediğiniz bir görseli (JPG, PNG, BMP) QR kodun arka planı olarak kullanın.
+- **Hareketli QR:** GIF desteği ile göz alıcı, hareketli QR kodları oluşturun.
+- **Toplu İşlem:** Tek bir CSV veya JSON dosyası ile yüzlerce QR kodunu saniyeler içinde üretin.
+- **Türkçe Karakter Desteği:** Linklerinizde veya metinlerinizde Türkçe karakterleri (ç, ğ, ı, ö, ş, ü) güvenle kullanın.
+- **Otomatik Optimizasyon:** Görselleriniz otomatik olarak kare boyutuna getirilir ve keskinleştirilir.
 
-Generate *common qr-code*,  *artistic qr-code (black & white or colorized)*,  *animated qr-code (black & white or colorized)*.
+---
 
-## Contents
+## 🛠️ Kurulum ve Kullanım
 
-* [Amazing-QR](#amazing-qr)
-  * [Overview](#overview)
-  * [Contents](#contents)
-  * [Examples](#examples)
-  * [Install](#install)
-  * [Usage](#usage)
-    * [Terminal Way](#terminal-way)
-    * [Import Way](#import-way)
-  * [Tips](#tips)
-  * [Supported Characters](#supported-characters)
-  * [Environment](#environment)
-  * [License](#license)
-  * [Buy me a coffee ☕️](#buy-me-a-coffee)
+### 1. Docker ile Yerel Kullanım (Kesin Kural: Sadece Docker)
+Yerel bilgisayarınızda Python veya kütüphane kurulumu yapmanıza gerek yoktur. Her şey Docker konteyneri içinde çalışır.
 
-## Examples
-
-![](https://github.com/orioninsist/amazing-qr/blob/master/example/qrs0.jpg)
-
-![](https://github.com/orioninsist/amazing-qr/blob/master/example/qrs1.jpg)
-
-![](https://github.com/orioninsist/amazing-qr/blob/master/example/qrs2.jpg)
-
-![](https://github.com/orioninsist/amazing-qr/blob/master/example/c_qrcode.gif)![](https://github.com/orioninsist/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode.gif)
-
-![](https://github.com/orioninsist/amazing-qr/blob/master/example/zootopia_qrcode.gif)![](https://github.com/orioninsist/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode0.gif)
-
-## Install
-
-```python
-# via pip
-pip install amzqr
+**Tekil QR Üretimi:**
+```bash
+docker run -v $(pwd)/output:/app/output amazing-qr "https://github.com/orioninsist" -n my_qr.png
 ```
 
-## Usage
-
-### Terminal Way  
-
-*(**TIPS**: If you haven't install [**amzqr**](https://pypi.python.org/pypi/amzqr), you should  `python(3) amzqr.py` instead of `amzqr` blow.)*
-
-```sh
-# summary
-amzqr Words
-      [-v {1,2,3,...,40}]
-      [-l {L,M,Q,H}]
-      [-n output-filename]
-      [-d output-directory]
-      [-p picture_file]
-      [-c]
-      [-con contrast]
-      [-bri brightness]
+**Toplu (Batch) QR Üretimi:**
+`inputs/order.csv` veya `order.json` dosyanızı hazırlayın ve şu komutu çalıştırın:
+```bash
+docker run --entrypoint python -v $(pwd)/inputs:/app/inputs -v $(pwd)/output:/app/output amazing-qr batch_process.py
 ```
 
-- see [Common QR-Code](#common-qr-code) for `Words`, `-v`, `-l`, `-n`, `-d`
-- see [Artistic QR-Code](#artistic-qr-code) for `-p`, `-c`, `-con`, `-bri`
-- see [Animated GIF QR-Code](#animated-gif-qr-code) about GIF
+### 2. Google Colab ile Kullanım (Bulut Üzerinde)
+Google Colab üzerinde Docker kullanılmaz. Notebook, projeyi doğrudan GitHub'dan klonlayarak çalıştırır.
 
-#### Common QR-Code
+👉 **[Amazing-QR Google Colab Notebook](amazing_qr_colab.ipynb)**
 
-![](https://github.com/orioninsist/amazing-qr/blob/master/example/0.png)
+Notebook adımları:
+1. `git clone https://github.com/orioninsist/amazing-qr.git` komutu ile projeyi indirir.
+2. Gerekli kütüphaneleri yükler.
+3. Form üzerinden tekil veya `batch_process.py` ile toplu üretim yapar.
 
-```markdown
-#1 Words
-amzqr https://github.com
+---
+
+## 📊 Müşteri Veri Formatı (Toplu Sipariş)
+
+Toplu üretim için `inputs/order.csv` veya `inputs/order.json` dosyasını şu formatta hazırlamalısınız:
+
+| Sütun (Key) | Açıklama | Örnek |
+| :--- | :--- | :--- |
+| **words** | QR kodun içeriği (URL/Metin) | `https://google.com` |
+| **save_name** | Dosya adı (Uzantısıyla birlikte) | `musteri_1.png` |
+| **picture** | Arka plan görsel adı (Opsiyonel) | `logo.png` veya `animasyon.gif` |
+| **colorized** | Renkli mi? (True/False) | `True` |
+
+### Örnek CSV içeriği:
+```csv
+words,save_name,picture,colorized
+https://site1.com,qr1.png,logo.png,True
+https://site2.com,qr2.gif,dance.gif,True
 ```
 
-* Just input a URL or a sentence, then get your QR-Code named 'qrcode.png' in the current directory.
+---
 
+## 📁 Klasör Yapısı
 
-```markdown
-#2 -v, -l
-amzqr https://github.com -v 10 -l Q
+Sistemin doğru çalışması için dosyalarınızı şu yapıda tutun:
+
+```text
+amazing-qr/
+├── inputs/
+│   ├── order.csv       <-- Sipariş listesi (CSV veya JSON)
+│   └── assets/         <-- Görseller ve GIF'ler (logo.png vb.)
+└── output/             <-- Üretilen QR kodları ve report.json buraya gelir
 ```
 
-* The **default** size of QR-Code depends both on the numbers of words you input and the level, while the **default** level (Error Correction Level) is **H** (the highest).
+---
 
-* **Customize**: If you want to control the size and the error-correction-level, use the `-v` and `-l` arguments. 
+## 🔍 Teknik Detaylar
 
-   `-v`  representing the length is from a minimum of **1** to a maximum of **40**. 
+- **Hata Düzeltme Seviyesi (Level):** Varsayılan olarak **H** (En yüksek) kullanılır.
+- **Kontrast ve Parlaklık:** `-con` (kontrast) ve `-bri` (parlaklık) parametreleri ile arka plan görsellerini optimize edebilirsiniz.
+- **Raporlama:** Toplu işlem bittiğinde `output/report.json` dosyasında hangi QR'ın başarıyla üretildiğini görebilirsiniz.
 
-   `-l` representing the error correction level is one of **L, M, Q and H**, where L is the lowest level and H is the highest.
+---
 
+## 👨‍💻 Geliştirici
+**Murat** tarafından geliştirilmektedir.
+[GitHub Profilim](https://github.com/orioninsist)
 
+---
 
-
-```markdown
-#3 -n, -d
-amzqr https://github.com   -n github_qr.jpg   -d .../paths/
-```
-
-* The **default** output-filename is 'qrcode.png', while the **default** output-directory is current directory.
-
-* **Customize**: You can name the output-file and decide the output-directory. **Notice** that if the name is as same as a existing file, the old one will be deleted.
-
-  `-n` representing the output-filename could be in the format one of `.jpg`， `.png` ，`.bmp` ，`.gif` .
-
-  `-d` means directory.
-
-
-#### Artistic QR-Code
-
-![](https://github.com/orioninsist/amazing-qr/blob/master/example/1.png)![](https://github.com/orioninsist/amazing-qr/blob/master/example/2.png)
-
-
-```markdown
-#1 -p
-amzqr https://github.com -p github.jpg
-```
-
-* The `-p` is to combine the QR-Code with the following picture which is in the same directory as the program. The resulting picture is **black and white** by default.
-
-
-```markdown
-#2 -c
-amzqr https://github.com -p github.jpg -c
-```
-
-* The `-c` is to make the resulting picture **colorized**.
-
-
-
-```markdown
-#3 -con, -bri
-amzqr https://github.com -p github.jpg [-c] -con 1.5 -bri 1.6
-```
-
-* The `-con` flag changes the **contrast** of the picture - a low number corresponds to low contrast and a high number to high contrast. **Default: 1.0**.
-
-* The `-bri` flag changes the **brightness** and the parameter values work the same as those for `-con`. **Default: 1.0**.
-
-
-
-
-
-#### Animated GIF QR-Code
-
-![](https://github.com/orioninsist/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode.gif)![](https://github.com/orioninsist/amazing-qr/blob/master/example/daftpunktocat-guy_qrcode0.gif)
-
-The only difference from Artistic QR-Code mentioned above is that you should input an image file in the `.gif` format. The you can get your black-and-white or colorful qr-code. Remember that when you use `-n` to customize the output-filename, then the output-filename must end by `.gif`.
-
-### Import Way
-
-```python
-from amzqr import amzqr
-
-version, level, qr_name = amzqr.run(
-    words,
-    version=1,
-    level='H',
-    picture=None,
-    colorized=False,
-    contrast=1.0,
-    brightness=1.0,
-    save_name=None,
-    save_dir=os.getcwd()
-)
-```
-
-*details about each parameter are as mentioned [above](#terminal-way)*
-
-```python
-# help(amzqr)
-Positional parameter
-   words: str
-
-Optional parameters
-   version: int, from 1 to 40
-   level: str, just one of ('L','M','Q','H')
-   picutre: str, a filename of a image
-   colorized: bool
-   constrast: float
-   brightness: float
-   save_name: str, the output filename like 'example.png'
-   save_dir: str, the output directory
-```
-
-## Tips
-
-* Use a nearly **square** picture instead of a rectangle one.
-
-* If the size of the picture is large, you should also choose a **rightly** large `-v` instead of using the default one.
-
-* If part of the picture is transparent, the qr code will look like: ![](https://github.com/orioninsist/amazing-qr/blob/master/example/aa.png)
-
-  You can change the transparent layer to white, and then it will look like: ![](https://github.com/orioninsist/amazing-qr/blob/master/example/a0.png)
-
-## Supported Characters
-
-* Numbers:  `0~9`
-
-* Letters:  `a~z, A~Z`
-
-* Common punctuations:
-
-  ```console
-  · , . : ; + - * / \ ~ ! @ # $ % ^ & ` ' = < > [ ] ( ) ? _ { } | and  (space)
-  ```
-
-## Environment
-
-- Python 3
-
-## License
-
-* GPLv3
-
-## Buy me a coffee
-
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/orioninsist?logo=github-sponsors&labelColor=pink&color=white)](https://github.com/sponsors/orioninsist)
-
-
-
-
-
-
-🎉🎉🎉 Thanks for your support. 🎉🎉🎉
+## 📜 Lisans
+Bu proje **GPLv3** lisansı ile korunmaktadır.
