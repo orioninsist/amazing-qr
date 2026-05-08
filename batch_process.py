@@ -19,32 +19,13 @@ def slugify(value):
     # Limit length
     return value[:50]
 
-def run_batch():
-    # Detect if running in Docker /app or local
-    base_dir = '/app' if os.path.exists('/app') and os.path.isdir('/app') else os.getcwd()
-    
-    input_csv = os.path.join(base_dir, 'inputs/order.csv')
-    input_json = os.path.join(base_dir, 'inputs/order.json')
-    assets_dir = os.path.join(base_dir, 'inputs/assets')
-    output_dir = os.path.join(base_dir, 'output')
-    report_file = os.path.join(output_dir, 'report.json')
-
-    data = []
-    if os.path.exists(input_json):
-        print(f"Reading batch data from {input_json}...")
-        with open(input_json, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-    elif os.path.exists(input_csv):
-        print(f"Reading batch data from {input_csv}...")
-        with open(input_csv, mode='r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            data = list(reader)
-    else:
-        print(f"Error: No order.csv or order.json found in {os.path.join(base_dir, 'inputs')}!")
-        return
-
+def process_items(data, assets_dir, output_dir):
+    """
+    Core processing loop that can be called by CLI or Gradio.
+    Yields progress info.
+    """
     if not data:
-        print("Error: Input file is empty.")
+        yield "Error: Input data is empty.", None
         return
 
     print(f"Starting batch process for {len(data)} items...")
@@ -53,7 +34,7 @@ def run_batch():
     count = 0
     
     for idx, row in enumerate(data, 1):
-        words = row.get('words', '').strip()
+        words = str(row.get('words', '')).strip()
         if not words:
             continue
         
@@ -61,13 +42,13 @@ def run_batch():
         # 1. Version: Auto-detect if missing or invalid
         try:
             version_val = row.get('version', 1)
-            version = int(version_val) if version_val and str(version_val).strip() != '' else 1
+            version = int(version_val) if version_val and str(version_val).strip() != '' and str(version_val).strip() != 'nan' else 1
         except:
             version = 1
             
         # 2. Level: Always 'H' for premium unless specified
         level = row.get('level', 'H')
-        if not level or str(level).strip() == '':
+        if not level or str(level).strip() == '' or str(level).strip() == 'nan':
             level = 'H'
         
         # 3. Picture Handling
@@ -89,9 +70,9 @@ def run_batch():
         # 5. Contrast & Brightness
         try:
             contrast_val = row.get('contrast', 1.0)
-            contrast = float(contrast_val) if contrast_val and str(contrast_val).strip() != '' else 1.0
+            contrast = float(contrast_val) if contrast_val and str(contrast_val).strip() != '' and str(contrast_val).strip() != 'nan' else 1.0
             brightness_val = row.get('brightness', 1.0)
-            brightness = float(brightness_val) if brightness_val and str(brightness_val).strip() != '' else 1.0
+            brightness = float(brightness_val) if brightness_val and str(brightness_val).strip() != '' and str(brightness_val).strip() != 'nan' else 1.0
         except:
             contrast, brightness = 1.0, 1.0
 
@@ -104,9 +85,9 @@ def run_batch():
         else:
             save_name = str(save_name).strip()
 
-        print(f"Processing [{idx}/{len(data)}]: {words} -> {save_name}")
-        if picture_path:
-            print(f"  - Using background: {picture_name} (Colorized: {colorized})")
+        status_msg = f"Processing [{idx}/{len(data)}]: {words} -> {save_name}"
+        print(status_msg)
+        yield status_msg, None
         
         item_report = {
             "input": row,
@@ -127,27 +108,55 @@ def run_batch():
                 save_name=save_name,
                 save_dir=output_dir
             )
-            print(f"  - Success: Generated {qr_name}")
             item_report["status"] = "success"
             item_report["output_file"] = qr_name
             count += 1
+            yield f"✅ Success: {qr_name}", os.path.join(output_dir, qr_name)
         except Exception as e:
             error_msg = str(e)
             print(f"  - Failed: {error_msg}")
             item_report["status"] = "failed"
             item_report["error"] = error_msg
+            yield f"❌ Failed: {error_msg}", None
         
         results.append(item_report)
 
     # Save report
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-        
+    
+    report_file = os.path.join(output_dir, 'report.json')
     with open(report_file, 'w', encoding='utf-8') as f:
         json.dump(results, f, ensure_ascii=False, indent=4)
 
-    print(f"\nBatch processing finished. Total generated: {count}")
-    print(f"Report saved to {report_file}")
+    final_msg = f"\nBatch processing finished. Total generated: {count}"
+    print(final_msg)
+    yield final_msg, None
+
+def run_batch():
+    # Detect if running in Docker /app or local
+    base_dir = '/app' if os.path.exists('/app') and os.path.isdir('/app') else os.getcwd()
+    
+    input_csv = os.path.join(base_dir, 'inputs/order.csv')
+    input_json = os.path.join(base_dir, 'inputs/order.json')
+    assets_dir = os.path.join(base_dir, 'inputs/assets')
+    output_dir = os.path.join(base_dir, 'output')
+
+    data = []
+    if os.path.exists(input_json):
+        with open(input_json, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    elif os.path.exists(input_csv):
+        import pandas as pd
+        df = pd.read_csv(input_csv)
+        data = df.to_dict('records')
+    else:
+        print(f"Error: No order.csv or order.json found!")
+        return
+
+    # Run the generator to completion for CLI
+    for msg, file in process_items(data, assets_dir, output_dir):
+        pass
 
 if __name__ == '__main__':
     run_batch()

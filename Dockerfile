@@ -2,8 +2,8 @@
 FROM python:3.10-slim
 
 # Set environment variables to ensure Python output is sent straight to terminal
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies required for Pillow and other libs
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -28,8 +28,10 @@ COPY . .
 RUN pip install .
 
 # Create a directory for outputs
-RUN mkdir -p /app/output
+RUN mkdir -p /app/output /app/inputs/assets
 
-# Set the default command to show help
-ENTRYPOINT ["amzqr"]
-CMD ["--help"]
+# Expose the Gradio port
+EXPOSE 7860
+
+# Set the default command to launch the Gradio app
+CMD ["python", "app.py"]
