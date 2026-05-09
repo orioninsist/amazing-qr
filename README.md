@@ -14,18 +14,24 @@ Projenin geliştirme ve optimizasyon süreci aşağıdaki tarihler arasında ger
 
 ## 3. Çalışma Ortamları
 
-### A) Yerel Kullanım (Docker)
-Yerel makinenizde bağımlılık sorunlarıyla uğraşmadan çalışmanın en güvenli yolu Docker kullanmaktır.
-- **Komut:** 
-  ```bash
-  docker run -p 7860:7860 -v $(pwd)/inputs:/app/inputs -v $(pwd)/output:/app/output orioninsist-qr
-  ```
-- **Erişim:** Tarayıcıdan `http://localhost:7860` adresine giderek modern Gradio arayüzünü kullanabilirsiniz.
+### 🚀 Yerel Kullanım (Sadece Docker)
+Bu proje **tamamen Docker üzerinde çalışacak şekilde** optimize edilmiştir. Bilgisayarınıza Python veya pip kurmanıza gerek yoktur.
 
-### B) Bulut Kullanımı (Google Colab)
-Herhangi bir kurulum yapmadan, doğrudan tarayıcı üzerinden çalışmak için Colab notebook'u tercih edebilirsiniz.
-- **Mantık:** GitHub deposu klonlanır, kütüphaneler kurulur ve interaktif hücreler üzerinden işlemler yapılır.
-- **Link:** [Google Colab Üzerinde Çalıştır](amazing_qr_colab.ipynb)
+#### A) Gradio Arayüzü (Görsel Panel)
+Modern web arayüzünü başlatmak için:
+```bash
+docker-compose up --build
+```
+Ardından tarayıcınızdan `http://localhost:7860` adresine gidin.
+
+#### B) Toplu İşlem (CLI / Batch)
+CSV listesindeki tüm siparişleri tek komutla işlemek için:
+```bash
+docker-compose run --rm amzqr python batch_process.py
+```
+
+### ☁️ Bulut Kullanımı (Google Colab)
+Eğer Docker kullanamıyorsanız, [Google Colab](amazing_qr_colab.ipynb) üzerinden devam edebilirsiniz.
 
 ## 4. Varlık Senkronizasyonu (`sync_assets.sh`)
 Toplu (Batch) QR kod üretim sürecini hızlandırmak ve otomatize etmek için bu betiği kullanabilirsiniz. Özellikle çok sayıda görselle çalışırken büyük kolaylık sağlar.

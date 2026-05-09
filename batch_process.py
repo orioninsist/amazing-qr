@@ -97,7 +97,7 @@ def get_advice(row, scannable_msg):
     
     return " | Tavsiye: " + ", ".join(advice)
 
-def process_items(data, assets_dir, output_dir, auto_repair=True):
+def process_items(data, assets_dir, output_dir, auto_repair=False):
     """
     Core processing loop that can be called by CLI or Gradio.
     Yields progress info.
@@ -146,15 +146,24 @@ def process_items(data, assets_dir, output_dir, auto_repair=True):
         item_report["output_file"] = save_name
         
         try:
-            # First Attempt
+            # Attempt Generation
+            # If auto_repair is on and we know this item failed before, apply fixes immediately
+            current_contrast = contrast
+            current_brightness = brightness
+            
+            if auto_repair and row.get('scannable') and "❌" in row.get('scannable'):
+                 current_contrast = 1.5
+                 current_brightness = 1.0
+                 yield f"🔄 Applying Smart Repair for {save_name}...", None, None
+
             ver, ecl, qr_name = amzqr.run(
                 words=words,
                 version=version,
                 level=level,
                 picture=picture_path,
                 colorized=colorized,
-                contrast=contrast,
-                brightness=brightness,
+                contrast=current_contrast,
+                brightness=current_brightness,
                 save_name=save_name,
                 save_dir=output_dir
             )
@@ -163,39 +172,17 @@ def process_items(data, assets_dir, output_dir, auto_repair=True):
             full_path = os.path.join(output_dir, qr_name)
             scanned_data, scannable_msg = test_qr_scannability(full_path)
             
-            # Auto Repair Logic
-            if auto_repair and "❌" in scannable_msg:
-                yield f"🔄 Auto-repairing {qr_name} (Trying optimized parameters...)", None, None
-                # Optimize parameters for retry
-                new_contrast = 1.5
-                new_brightness = 1.0
-                ver, ecl, qr_name = amzqr.run(
-                    words=words,
-                    version=version,
-                    level=level,
-                    picture=picture_path,
-                    colorized=colorized,
-                    contrast=new_contrast,
-                    brightness=new_brightness,
-                    save_name=save_name,
-                    save_dir=output_dir
-                )
-                # Re-test
-                scanned_data, scannable_msg = test_qr_scannability(full_path)
-                item_report["contrast"] = new_contrast
-                item_report["brightness"] = new_brightness
-                if "✅" in scannable_msg:
-                    scannable_msg = "✅ Success (Auto-Repaired)"
-
             advice = get_advice(item_report, scannable_msg)
             
             item_report["process_status"] = "success"
             item_report["scannable"] = scannable_msg
             item_report["advice"] = advice
             item_report["scanned_data"] = scanned_data
+            item_report["contrast"] = current_contrast
+            item_report["brightness"] = current_brightness
             
             count += 1
-            yield f"✅ {qr_name} | {scannable_msg}{advice}", full_path, item_report
+            yield f"✅ {qr_name} | {scannable_msg}", full_path, item_report
         except Exception as e:
             error_msg = str(e)
             item_report["process_status"] = "failed"
@@ -210,7 +197,7 @@ def process_items(data, assets_dir, output_dir, auto_repair=True):
     updated_df.to_csv(updated_csv_path, index=False)
     
     pbar.close()
-    final_msg = f"\nBatch processing finished. Total generated: {count}"
+    final_msg = f"\nBatch processing finished. Total processed: {len(data)}"
     yield final_msg, None, None
 
 def run_batch():
