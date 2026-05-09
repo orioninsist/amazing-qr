@@ -117,3 +117,6 @@ uploads/
 
  
 
+gif/cat_frames
+gif/*.png 
+gif/*.gif 
