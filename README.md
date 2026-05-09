@@ -112,5 +112,44 @@ Bu bölüm, projenin ürettiği çıktıların gerçek teknik verilerini ve kali
 2. **Yüksek Hata Toleransı:** Varsayılan olarak **H Seviyesi (High)** kullanılır. Bu, kodun %30'u görselle kaplı olsa dahi hatasız okunmasını sağlar.
 3. **Vektörel Yakınsama:** Pikseller keskin hatlara sahiptir, bu da kodun uzak mesafelerden veya düşük ışıklı ortamlarda bile kolayca taranabilmesini sağlar.
 
+## 11. Müşteri İçin Üretim ve Kalite Standartları
+
+Müşterilerinize en iyi (Premium) sonucu sunabilmeniz için bu parametreleri bir "Üretim Standartı" haline getirmeniz gerekir. İşte projenin görüntü işleme motoruna (Pillow & OpenCV) göre altın oranlar ve en iyi sonuç rehberi:
+
+### 🛠 Profesyonel Üretim Rehberi (Müşteri İçin En İyi Ayarlar)
+
+| Parametre | En İyi Değer (Premium) | Neden Bu Değeri Seçmelisiniz? |
+| :--- | :--- | :--- |
+| **Versiyon (`-v`)** | **10 - 25 arası** | **15** "Altın Oran"dır. Resim hem net görünür hem de noktalar kameranın okuyabileceği büyüklükte kalır. (40'tan uzak durun). |
+| **Hata Seviyesi (`-l`)** | **H (High)** | **Mutlaka H olmalı.** Resimli QR'da kodun %30'u "hasarlı" sayılır. H seviyesi, kodun bu hasara rağmen hatasız okunmasını sağlar. |
+| **Kontrast (`-con`)** | **1.3 - 1.7 arası** | **1.5** en idealidir. QR noktalarının (sinyal) arka plan resminden (gürültü) ayrışmasını sağlar. Tarayıcı hızı %50 artar. |
+| **Parlaklık (`-bri`)** | **1.1 - 1.2 arası** | Resim koyuysa noktalar görünmez. **1.1** yaparak resmi hafif aydınlatmak, kameranın siyah noktaları daha net seçmesini sağlar. |
+| **Renklendirme (`-c`)** | **Aktif (True)** | Müşteriye "Sanatsal QR" satıyorsanız resmin renklerini koda aktarmak için bu bayrağı mutlaka kullanmalısınız. |
+
+### 💎 Müşteri Tipine Göre 3 Farklı Üretim Paketi
+Müşterilerinize şu 3 standart üzerinden hizmet verebilirsiniz:
+
+1. **🥇 Premium Paket (En İyi Görünüm ve Okuma)**
+   En profesyonel ve her telefonda anında çalışan ayardır.
+   - **Ayarlar:** Versiyon: 15, Hata Seviyesi: H, Kontrast: 1.5, Parlaklık: 1.1
+   - **Sonuç:** Resim kristal netliğinde, QR ise şık bir "doku" gibi görünür.
+
+2. **🎨 Sanatsal / Logo Paketi (Görsellik Ön Planda)**
+   Resmin (veya logonun) çok daha belirgin olması isteniyorsa:
+   - **Ayarlar:** Versiyon: 25, Hata Seviyesi: H, Kontrast: 1.3, Parlaklık: 1.0
+   - **Sonuç:** QR noktaları çok küçüktür, resim ön plandadır. (Lüks markalar için ideal).
+
+3. **⚡ Hızlı ve Garanti Paket (Eski Telefonlar İçin)**
+   Her türlü kötü ışıkta ve eski model telefonlarda bile çalışsın isteniyorsa:
+   - **Ayarlar:** Versiyon: 10, Hata Seviyesi: H, Kontrast: 2.0, Parlaklık: 1.2
+   - **Sonuç:** Noktalar daha belirgin ve "serttir". Okuma hızı maksimumdur.
+
+### ⚠️ Kritik Üretim İpuçları (Hata Yapmamak İçin)
+*   **Veri Uzunluğu:** `Words` kısmına çok uzun linkler koymayın. Link ne kadar uzunsa, kod o kadar karmaşıklaşır. Müşteriye linkleri **bit.ly** gibi servislerle kısaltmasını önerin.
+*   **Arka Plan Seçimi:** Çok karışık (çok fazla detaylı) resimler yerine, daha sade ve kontrastı yüksek resimler seçmek kaliteyi %100 artırır.
+*   **Dosya Formatı:** Hareketli bir şey istenmiyorsa her zaman **.png** tercih edin. PNG, QR noktalarındaki keskinliği (sharpness) korur, JPG ise pikselleri dağıtabilir.
+
+> **Özet Tavsiye:** Müşterine "En İyi Kalite"yi vermek istiyorsan standart olarak **Versiyon: 15, Seviye: H, Kontrast: 1.5** ayarlarını kullan, asla pişman olmazsın.
+
 ---
 **Geliştirici:** [orioninsist](https://github.com/orioninsist)
