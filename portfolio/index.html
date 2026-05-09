@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazing QR - Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <nav>
+        <div class="logo">Amazing QR</div>
+        <div class="lang-switch">
+            <button class="lang-btn active" onclick="setLanguage('en')">EN</button>
+            <button class="lang-btn" onclick="setLanguage('tr')">TR</button>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1 data-en="Unleash the Power of Visual QRs" data-tr="Görsel QR Kodların Gücünü Keşfedin">Unleash the Power of Visual QRs</h1>
+        <p data-en="Transform boring QR codes into stunning art. Support for images, GIFs, and batch processing." 
+           data-tr="Sıkıcı QR kodlarını göz alıcı sanat eserlerine dönüştürün. Resim, GIF ve toplu işlem desteği.">
+            Transform boring QR codes into stunning art. Support for images, GIFs, and batch processing.
+        </p>
+        <a href="https://github.com/orioninsist/amazing-qr" class="btn-primary" data-en="View on GitHub" data-tr="GitHub'da Görüntüle">View on GitHub</a>
+    </header>
+
+    <section class="portfolio-section">
+        <h2 data-en="Featured Designs" data-tr="Öne Çıkan Tasarımlar">Featured Designs</h2>
+        <div class="gallery">
+            <!-- Item 1 -->
+            <div class="card">
+                <img src="assets/zootopia_qrcode.gif" alt="Zootopia QR">
+                <div class="card-info">
+                    <h3 data-en="Animated Zootopia" data-tr="Hareketli Zootopia">Animated Zootopia</h3>
+                    <p data-en="High-quality GIF integration with scannable QR." data-tr="Taranabilir QR ile yüksek kaliteli GIF entegrasyonu.">High-quality GIF integration with scannable QR.</p>
+                </div>
+            </div>
+            <!-- Item 2 -->
+            <div class="card">
+                <img src="assets/daftpunktocat-guy_qrcode.gif" alt="GitHub Octocat QR">
+                <div class="card-info">
+                    <h3 data-en="Octocat Animation" data-tr="Octocat Animasyonu">Octocat Animation</h3>
+                    <p data-en="Seamless loop GIF with embedded data." data-tr="Gömülü veriye sahip kesintisiz döngü GIF.">Seamless loop GIF with embedded data.</p>
+                </div>
+            </div>
+            <!-- Item 3 -->
+            <div class="card">
+                <img src="assets/qrs2.jpg" alt="Nature QR">
+                <div class="card-info">
+                    <h3 data-en="Nature Landscape" data-tr="Doğa Manzarası">Nature Landscape</h3>
+                    <p data-en="Static image blending with QR patterns." data-tr="QR desenleriyle harmanlanmış statik görüntü.">Static image blending with QR patterns.</p>
+                </div>
+            </div>
+            <!-- Item 4 -->
+            <div class="card">
+                <img src="assets/wechatpay.jpg" alt="WeChat Pay QR">
+                <div class="card-info">
+                    <h3 data-en="Professional Branding" data-tr="Kurumsal Markalama">Professional Branding</h3>
+                    <p data-en="Clean and reliable for business use." data-tr="İş kullanımı için temiz ve güvenilir.">Clean and reliable for business use.</p>
+                </div>
+            </div>
+            <!-- Item 5 -->
+            <div class="card">
+                <img src="assets/github_qrcode2.jpg" alt="GitHub Logo QR">
+                <div class="card-info">
+                    <h3 data-en="Social Profiles" data-tr="Sosyal Profiller">Social Profiles</h3>
+                    <p data-en="Perfect for developer portfolios." data-tr="Geliştirici portföyleri için mükemmel.">Perfect for developer portfolios.</p>
+                </div>
+            </div>
+            <!-- Item 6 -->
+            <div class="card">
+                <img src="assets/2_qrcode.jpg" alt="Creative QR">
+                <div class="card-info">
+                    <h3 data-en="Creative Patterns" data-tr="Yaratıcı Desenler">Creative Patterns</h3>
+                    <p data-en="Custom colors and styles for unique look." data-tr="Benzersiz bir görünüm için özel renkler ve stiller.">Custom colors and styles for unique look.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Amazing QR. Created by <a href="https://github.com/orioninsist" style="color: var(--primary-color);">orioninsist</a></p>
+        <p data-en="Built with passion and automation." data-tr="Tutku ve otomasyonla inşa edildi.">Built with passion and automation.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
