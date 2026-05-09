@@ -3,6 +3,8 @@ import json
 import os
 import sys
 import re
+import cv2
+import pandas as pd
 from amzqr import amzqr
 from tqdm import tqdm
 
@@ -20,13 +22,55 @@ def slugify(value):
     # Limit length
     return value[:50]
 
+def test_qr_scannability(img_path):
+    """Checks if a QR code is scannable and returns the result."""
+    if not img_path or not os.path.exists(img_path):
+        return None, "Missing"
+    
+    # GIF handling (OpenCV detector doesn't support GIFs directly)
+    if img_path.lower().endswith('.gif'):
+        return None, "Manual Test Needed (GIF)"
+    
+    try:
+        img = cv2.imread(img_path)
+        detector = cv2.QRCodeDetector()
+        data, _, _ = detector.detectAndDecode(img)
+        if data:
+            return data, "✅ Success"
+        else:
+            return None, "❌ Failed"
+    except Exception as e:
+        return None, f"⚠️ Error: {str(e)}"
+
+def get_advice(row, scannable_msg):
+    """Provides advice if scannability fails."""
+    if "Success" in scannable_msg or "Manual" in scannable_msg:
+        return ""
+    
+    advice = []
+    contrast = float(row.get('contrast', 1.0))
+    brightness = float(row.get('brightness', 1.0))
+    version = int(row.get('version', 1))
+    
+    if contrast < 1.5:
+        advice.append("Kontrastı artırın (Örn: 2.0)")
+    if brightness > 1.2:
+        advice.append("Parlaklığı azaltın (Örn: 1.0)")
+    if version > 10:
+        advice.append("Versiyonu düşürmeyi deneyin")
+    
+    if not advice:
+        advice.append("Kontrast ve Parlaklık dengesini kontrol edin")
+    
+    return " | Tavsiye: " + ", ".join(advice)
+
 def process_items(data, assets_dir, output_dir):
     """
     Core processing loop that can be called by CLI or Gradio.
     Yields progress info.
     """
     if not data:
-        yield "Error: Input data is empty.", None
+        yield "Error: Input data is empty.", None, None
         return
 
     print(f"Starting batch process for {len(data)} items...")
@@ -34,6 +78,7 @@ def process_items(data, assets_dir, output_dir):
     results = []
     count = 0
     pbar = tqdm(total=len(data), desc="Processing QRs")
+    
     for idx, row in enumerate(data, 1):
         pbar.update(1)
         words = str(row.get('words', '')).strip()
@@ -41,62 +86,31 @@ def process_items(data, assets_dir, output_dir):
             continue
         
         # --- Smart Defaults ---
-        # 1. Version: Auto-detect if missing or invalid
-        try:
-            version_val = row.get('version', 1)
-            version = int(version_val) if version_val and str(version_val).strip() != '' and str(version_val).strip() != 'nan' else 1
-        except:
-            version = 1
-            
-        # 2. Level: Always 'H' for premium unless specified
-        level = row.get('level', 'H')
-        if not level or str(level).strip() == '' or str(level).strip() == 'nan':
-            level = 'H'
-        
-        # 3. Picture Handling
-        picture_name = row.get('picture', None)
+        version = int(row.get('version', 1))
+        level = str(row.get('level', 'H'))
+        picture_name = str(row.get('picture', '')).strip()
         picture_path = None
-        if picture_name and str(picture_name).strip() != 'nan' and str(picture_name).strip() != '':
-            picture_path = os.path.join(assets_dir, str(picture_name).strip())
+        if picture_name and picture_name != 'nan':
+            picture_path = os.path.join(assets_dir, picture_name)
             if not os.path.exists(picture_path):
-                print(f"Warning: Asset {picture_name} not found in {assets_dir}. Skipping picture.")
                 picture_path = None
 
-        # 4. Colorized: Default to True if picture exists, False otherwise
-        colorized_raw = row.get('colorized', None)
-        if colorized_raw is None or str(colorized_raw).strip() == '' or str(colorized_raw).strip() == 'nan':
-            colorized = True if picture_path else False
-        else:
-            colorized = str(colorized_raw).lower() == 'true'
+        colorized = str(row.get('colorized', 'True')).lower() == 'true'
+        contrast = float(row.get('contrast', 1.0))
+        brightness = float(row.get('brightness', 1.0))
 
-        # 5. Contrast & Brightness
-        try:
-            contrast_val = row.get('contrast', 1.0)
-            contrast = float(contrast_val) if contrast_val and str(contrast_val).strip() != '' and str(contrast_val).strip() != 'nan' else 1.0
-            brightness_val = row.get('brightness', 1.0)
-            brightness = float(brightness_val) if brightness_val and str(brightness_val).strip() != '' and str(brightness_val).strip() != 'nan' else 1.0
-        except:
-            contrast, brightness = 1.0, 1.0
-
-        # 6. Save Name: Auto-generate if missing
-        save_name = row.get('save_name', None)
-        if not save_name or str(save_name).strip() == '' or str(save_name).strip() == 'nan':
-            ext = '.gif' if picture_name and str(picture_name).lower().endswith('.gif') else '.png'
+        save_name = str(row.get('save_name', '')).strip()
+        if not save_name or save_name == 'nan':
+            ext = '.gif' if picture_name.lower().endswith('.gif') else '.png'
             slug = slugify(words) or f"qr_{idx}"
             save_name = f"{slug}{ext}"
-        else:
-            save_name = str(save_name).strip()
 
-        status_msg = f"Processing [{idx}/{len(data)}]: {words} -> {save_name}"
-        print(status_msg)
-        yield status_msg, None
+        status_msg = f"Processing [{idx}/{len(data)}]: {words}"
+        yield status_msg, None, None
         
-        item_report = {
-            "input": row,
-            "status": "pending",
-            "output_file": save_name,
-            "error": None
-        }
+        item_report = row.copy()
+        item_report["process_status"] = "pending"
+        item_report["output_file"] = save_name
         
         try:
             ver, ecl, qr_name = amzqr.run(
@@ -110,70 +124,61 @@ def process_items(data, assets_dir, output_dir):
                 save_name=save_name,
                 save_dir=output_dir
             )
-            item_report["status"] = "success"
-            item_report["output_file"] = qr_name
+            
+            # QC Test
+            full_path = os.path.join(output_dir, qr_name)
+            scanned_data, scannable_msg = test_qr_scannability(full_path)
+            advice = get_advice(row, scannable_msg)
+            
+            item_report["process_status"] = "success"
+            item_report["scannable"] = scannable_msg
+            item_report["advice"] = advice
+            item_report["scanned_data"] = scanned_data
+            
             count += 1
-            yield f"✅ Success: {qr_name}", os.path.join(output_dir, qr_name)
+            yield f"✅ {qr_name} | {scannable_msg}{advice}", full_path, item_report
         except Exception as e:
             error_msg = str(e)
-            print(f"  - Failed: {error_msg}")
-            item_report["status"] = "failed"
+            item_report["process_status"] = "failed"
             item_report["error"] = error_msg
-            yield f"❌ Failed: {error_msg}", None
+            yield f"❌ Failed: {error_msg}", None, item_report
         
         results.append(item_report)
 
-    # Save report
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    # Save final updated CSV for internal tracking
+    updated_df = pd.DataFrame(results)
+    updated_csv_path = os.path.join(output_dir, 'order-updated.csv')
+    updated_df.to_csv(updated_csv_path, index=False)
     
-    report_file = os.path.join(output_dir, 'report.json')
-    with open(report_file, 'w', encoding='utf-8') as f:
-        json.dump(results, f, ensure_ascii=False, indent=4)
-
     pbar.close()
     final_msg = f"\nBatch processing finished. Total generated: {count}"
-    print(final_msg)
-    yield final_msg, None
+    yield final_msg, None, None
 
 def run_batch():
     # Detect if running in Docker /app or local
     base_dir = '/app' if os.path.exists('/app') and os.path.isdir('/app') else os.getcwd()
     
     input_csv = os.path.join(base_dir, 'inputs/order.csv')
-    input_json = os.path.join(base_dir, 'inputs/order.json')
     assets_dir = os.path.join(base_dir, 'inputs/assets')
     output_dir = os.path.join(base_dir, 'output')
 
-    data = []
-    if os.path.exists(input_json):
-        with open(input_json, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-    elif os.path.exists(input_csv):
-        import pandas as pd
-        df = pd.read_csv(input_csv)
-        data = df.to_dict('records')
-    else:
-        print(f"Error: No order.csv or order.json found!")
+    if not os.path.exists(input_csv):
+        print(f"Error: No order.csv found!")
         return
 
+    df = pd.read_csv(input_csv)
+    data = df.to_dict('records')
+
     # Filter selected items
-    if data and isinstance(data, list):
-        filtered_data = []
-        for item in data:
-            # If 'selected' column exists, respect it. If not, default to True.
-            is_selected = item.get('selected', True)
-            if str(is_selected).lower() == 'true' or is_selected is True:
-                filtered_data.append(item)
-        data = filtered_data
+    data = [item for item in data if str(item.get('selected', True)).lower() == 'true']
 
     if not data:
-        print("No items selected for processing. Check your selection in the editor.")
+        print("No items selected for processing.")
         return
 
     # Run the generator to completion for CLI
-    for msg, file in process_items(data, assets_dir, output_dir):
-        pass
+    for msg, file, report in process_items(data, assets_dir, output_dir):
+        if msg: print(msg)
 
 if __name__ == '__main__':
     run_batch()

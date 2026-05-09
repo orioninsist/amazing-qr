@@ -1,0 +1,14 @@
+Yapilacaklar listesi
+1- amazing_qr_colab.ipynb ve lokade dokcer uzerinde gradio uzeinde calsirken ikiside ayni mantik ile yapilacak ve sadece docker uzerinde caliscak lokalde kirltemek pip krumak yok.
+2- 2.Blokta order.csv dosyasi lokalde secilip yuklenir. ve daha oncesinde herhangi bir tablo yok lokadene secilir o yukelnir am tablo ismi herzman order.csv sadece.
+3- 3.blokta order.csv dosyasin goruntulenir toplu yada manuel degitirme yapma hakki sahip olunur tum parmetler orda gozukur ve secenekelr guzel gorunmlu olsund yielim toplum secim bunu disinda manuel tikalma secklin stiei tablol iscerek sadec eot alblor proces altina alinmali bu seceneiginde olmasilaizm.
+4- 4.blokta tablo guncelmesi son halini process den onceski son hali goruntuelnir ve burada baklir sadece islem olmaz prcess den onceki son talbo gorunumu yani proje bu tabloya gore caliscaktir.
+5- 5.Blokta process calsiir ve bu sures cok guzle sekidle takip edilip ciktilar ahgi sasm ne varsa bu kondua utm bilgileri yzduelik oarlakda goruntuleriz
+6-.6.Blokta islem tammalandikan sonra sorunsuz goruntule tum icktilari gorulecek alan bruasidir sorusnuz gorunleri istsrek open image iopemen gif yapar ussrsekde bilisay idniririz bu scekler olsun bunu disinda diplay oarlak gozuekcek
+7- 7.Blokta kontrol yani qr kodun sorunsuz calismasi icin kalite kontorly pailir okunur yada okunama zklaite rbuada tum pramarle soncuda bellrili olur ucnk uamac sadece qr kod ruetmke deigl okunmasi calsimasin.buradan gfecerse sorun yok gecemezse
+8- 8.blok opsiyonelg ecemme durumunde bana tavsiye sebebini soylemk zorunda yada resim uzerinde calisma yapacak bunu karkar veremedim bunu seninle konusacagiz
+9- 9.blota bu sorun czoduldukten opsiyonel eger qrda sorun var ise burdan son kontorlleri resimleri goruteme tekrar cikacak bruadan goruntle idnirme yacapgiz 
+10- 10.blokta osnr esim uzeinrde  calsima soncun osnk kez yiena nti mantik korn edecegiz sorun czoulmsumu kontorl icin bruada aritk kesinlik eysil yapnmali yesil yandikdai sonra 11.adima gecilir egerki 10.adimda sorun devam ederse bunu icn hangi adima donunulur onuda soyle konusalim.
+11- 11.blok son aidmda cok ali sekidel osn halin iqe kdoalri zip halidne indir
+
+order.csv dosyasi tek tablo dosya adi proje bunu gorunce calsiir ve gogole colab ve manul lokade grai uzer3inde talbo uzeinde gieiklik yaptimgi islemde tabloyya zarar vermeyiz gecici sielmde kulalnir talbonu orjine ise upload ettimgi lokade o kalir ona zar vemreyiz ama egerkit albo degisikmi ise icindeki iblgiler ahyet ozaman process islemi naisl bitiyorsa qr kod icik olsuuyor bunu yaninda o degisin tablo vsv formainda oda icinde inmeli bruada sunu analriz bu dov dosyasina gore bu resm gifleir oslumstu bunu burdan analriz sonra lokaden ilk indirigmi orer sv ile arksialsitiriz ama process icinde inerken resim arasinda order-updated.csv formainda insinki bu seide tablonu deingi anlaaybiulemm icin
