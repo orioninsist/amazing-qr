@@ -9,7 +9,7 @@
 # Define paths
 ASSETS_DIR="inputs/assets"
 ORDER_CSV="inputs/order.csv"
-GITHUB_URL="https://github.com/orioninsist"
+GITHUB_URL="https://orioninsist.org"
 
 # Check if assets directory exists
 if [ ! -d "$ASSETS_DIR" ]; then
