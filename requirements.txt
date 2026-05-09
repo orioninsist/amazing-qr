@@ -3,3 +3,6 @@ numpy==1.25.2
 Pillow==10.0.0
 pandas>=2.1.0
 gradio>=4.0.0
+opencv-python
+amzqr
+tqdm

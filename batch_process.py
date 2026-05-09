@@ -4,6 +4,7 @@ import os
 import sys
 import re
 from amzqr import amzqr
+from tqdm import tqdm
 
 def slugify(value):
     """
@@ -32,8 +33,9 @@ def process_items(data, assets_dir, output_dir):
     
     results = []
     count = 0
-    
+    pbar = tqdm(total=len(data), desc="Processing QRs")
     for idx, row in enumerate(data, 1):
+        pbar.update(1)
         words = str(row.get('words', '')).strip()
         if not words:
             continue
@@ -129,6 +131,7 @@ def process_items(data, assets_dir, output_dir):
     with open(report_file, 'w', encoding='utf-8') as f:
         json.dump(results, f, ensure_ascii=False, indent=4)
 
+    pbar.close()
     final_msg = f"\nBatch processing finished. Total generated: {count}"
     print(final_msg)
     yield final_msg, None

@@ -97,8 +97,13 @@ MANIFEST
 .idea
 .vscode
 
+# Custom Project Ignores
+inputs/order.csv
 inputs/assets/*
-
-inputs/assets/*
-
+!inputs/assets/.gitkeep
 outputs/*
+output/*
+*.zip
+temp/
+uploads/
+*.bak
