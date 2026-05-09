@@ -165,11 +165,21 @@ def process_items(data, assets_dir, output_dir, auto_repair=False):
         initial_contrast = float(row.get('contrast', 1.0))
         initial_brightness = float(row.get('brightness', 1.0))
 
-        save_name = str(row.get('save_name', '')).strip()
+        # --- Name Generation ---
+        # If the row already has a save_name or output_file (e.g. during repair), use it.
+        save_name = str(row.get('save_name', row.get('output_file', ''))).strip()
+        
         if not save_name or save_name == 'nan':
             ext = '.gif' if picture_name.lower().endswith('.gif') else '.png'
-            slug = slugify(words) or f"qr_{idx}"
-            save_name = f"{slug}{ext}"
+            slug_words = slugify(words) or "qr"
+            
+            # Ensure uniqueness by using index and picture name
+            if picture_name and picture_name != 'nan':
+                pic_base = os.path.splitext(picture_name)[0]
+                slug_pic = slugify(pic_base)
+                save_name = f"{idx:03d}_{slug_words}_{slug_pic}{ext}"
+            else:
+                save_name = f"{idx:03d}_{slug_words}{ext}"
 
         # --- Smart Repair Loop ---
         # We try up to 3 attempts if auto_repair is ON
