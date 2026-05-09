@@ -22,6 +22,11 @@ def slugify(value):
     # Limit length
     return value[:50]
 
+try:
+    from pyzbar.pyzbar import decode as pyzbar_decode
+except ImportError:
+    pyzbar_decode = None
+
 def test_qr_scannability(img_path):
     """Checks if a QR code is scannable and returns the result."""
     if not img_path:
@@ -36,40 +41,41 @@ def test_qr_scannability(img_path):
             cap = cv2.VideoCapture(img_path)
             ret, frame = cap.read()
             cap.release()
-            if ret:
-                detector = cv2.QRCodeDetector()
-                data, _, _ = detector.detectAndDecode(frame)
-                if data:
-                    return data, "✅ Success (GIF)"
-                else:
-                    return None, "⚠️ Manual Test Needed (GIF - Frame 1 Not Readable)"
-            else:
+            if not ret:
                 return None, "⚠️ Manual Test Needed (GIF - Frame Extract Error)"
+            img = frame
         except Exception as e:
             return None, f"⚠️ Manual Test Needed (GIF Error: {str(e)})"
-    
-    try:
+    else:
         img = cv2.imread(img_path)
         if img is None:
             return None, "❌ File Load Error (Corrupt?)"
-            
-        detector = cv2.QRCodeDetector()
-        data, _, _ = detector.detectAndDecode(img)
-        
-        # If standard detector fails, try some preprocessing
-        if not data:
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            # Try CLAHE (Contrast Limited Adaptive Histogram Equalization)
-            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-            cl1 = clahe.apply(gray)
-            data, _, _ = detector.detectAndDecode(cl1)
-            
-        if data:
-            return data, "✅ Success"
-        else:
-            return None, "❌ Failed (Unreadable)"
-    except Exception as e:
-        return None, f"⚠️ QC Error: {str(e)}"
+
+    # 1. Try pyzbar (Most reliable)
+    if pyzbar_decode:
+        try:
+            decoded = pyzbar_decode(img)
+            if decoded:
+                data = decoded[0].data.decode('utf-8')
+                return data, "✅ Success (pyzbar)"
+        except:
+            pass
+
+    # 2. Try OpenCV (Fallback)
+    detector = cv2.QRCodeDetector()
+    data, _, _ = detector.detectAndDecode(img)
+    if data:
+        return data, "✅ Success (OpenCV)"
+
+    # 3. Try Preprocessing + OpenCV
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    cl1 = clahe.apply(gray)
+    data, _, _ = detector.detectAndDecode(cl1)
+    if data:
+        return data, "✅ Success (OpenCV-Proc)"
+
+    return None, "❌ Failed (Unreadable)"
 
 def get_advice(row, scannable_msg):
     """Provides specific advice if scannability fails."""

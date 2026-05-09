@@ -4,6 +4,8 @@ services:
   amzqr:
     build: .
     image: amazing-qr:latest
+    ports:
+      - "7860:7860"
     volumes:
       - .:/app
     # The default command will show help, but you can override it
