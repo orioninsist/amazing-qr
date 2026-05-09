@@ -24,10 +24,13 @@ def prepare_data(csv_file):
     df = pd.read_csv(csv_file.name)
     
     # Fill defaults
-    cols = ['words', 'version', 'level', 'picture', 'colorized', 'contrast', 'brightness', 'save_name']
+    cols = ['selected', 'words', 'version', 'level', 'picture', 'colorized', 'contrast', 'brightness', 'save_name']
     for col in cols:
         if col not in df.columns:
-            df[col] = ""
+            if col == 'selected':
+                df[col] = True
+            else:
+                df[col] = ""
     
     # Simple smart defaults for the UI
     for i, row in df.iterrows():
@@ -37,6 +40,8 @@ def prepare_data(csv_file):
         if not str(row.get('brightness')).strip() or str(row.get('brightness')) == 'nan': df.at[i, 'brightness'] = 1.0
         if not str(row.get('colorized')).strip() or str(row.get('colorized')) == 'nan':
             df.at[i, 'colorized'] = True if str(row.get('picture')).strip() else False
+        if pd.isna(row.get('selected')):
+            df.at[i, 'selected'] = True
         
     return df[cols]
 
@@ -67,7 +72,14 @@ def generate_qrs(df_data):
         shutil.rmtree(OUTPUT_DIR)
     os.makedirs(OUTPUT_DIR)
 
-    data = df_data.to_dict('records')
+    # Filter only selected rows
+    df_selected = df_data[df_data['selected'] == True]
+    
+    if df_selected.empty:
+        yield "⚠️ Error: No items selected for processing. Please check the 'selected' column.", [], None
+        return
+
+    data = df_selected.to_dict('records')
     images = []
     logs = "🚀 Batch processing started...\n"
     
@@ -118,8 +130,8 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")
             with gr.Column(scale=2):
                 gr.Markdown("### ✍️ 3. Review & Edit Parameters")
                 data_editor = gr.Dataframe(
-                    headers=['words', 'version', 'level', 'picture', 'colorized', 'contrast', 'brightness', 'save_name'],
-                    datatype=["str", "number", "str", "str", "bool", "number", "number", "str"],
+                    headers=['selected', 'words', 'version', 'level', 'picture', 'colorized', 'contrast', 'brightness', 'save_name'],
+                    datatype=["bool", "str", "number", "str", "str", "bool", "number", "number", "str"],
                     interactive=True,
                     label="Order List",
                     type="pandas"

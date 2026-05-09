@@ -157,6 +157,20 @@ def run_batch():
         print(f"Error: No order.csv or order.json found!")
         return
 
+    # Filter selected items
+    if data and isinstance(data, list):
+        filtered_data = []
+        for item in data:
+            # If 'selected' column exists, respect it. If not, default to True.
+            is_selected = item.get('selected', True)
+            if str(is_selected).lower() == 'true' or is_selected is True:
+                filtered_data.append(item)
+        data = filtered_data
+
+    if not data:
+        print("No items selected for processing. Check your selection in the editor.")
+        return
+
     # Run the generator to completion for CLI
     for msg, file in process_items(data, assets_dir, output_dir):
         pass
