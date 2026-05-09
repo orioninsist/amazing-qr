@@ -96,7 +96,7 @@ def run_batch_ui(df_data):
     # Check for overall status
     failed_count = len([r for r in qc_reports if "❌" in r.get('scannable', '')])
     final_status = "🟢 TAMAMLANDI" if failed_count == 0 else f"🟠 {failed_count} SORUNLU"
-def apply_bulk_edit(df, v_check, v_val, l_check, l_val, p_check, p_val, c_check, c_val):
+def apply_bulk_edit(df, v_check, v_val, l_check, l_val, p_check, p_val, c_check, c_val, con_check, con_val, bri_check, bri_val):
     if df is None or df.empty:
         return df
     
@@ -106,7 +106,16 @@ def apply_bulk_edit(df, v_check, v_val, l_check, l_val, p_check, p_val, c_check,
         if l_check: new_df.at[i, 'level'] = l_val
         if p_check: new_df.at[i, 'picture'] = p_val
         if c_check: new_df.at[i, 'colorized'] = c_val
+        if con_check: new_df.at[i, 'contrast'] = con_val
+        if bri_check: new_df.at[i, 'brightness'] = bri_val
         
+    return new_df
+
+def select_all_rows(df, status):
+    if df is None or df.empty:
+        return df
+    new_df = df.copy()
+    new_df['selected'] = status
     return new_df
 
 # Premium CSS
@@ -155,10 +164,19 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue", secondary_hue="slate"), 
                         with gr.Column():
                             c_check = gr.Checkbox(label="Renk Uygula")
                             c_val = gr.Checkbox(value=True, label="Renklendir")
+                        with gr.Column():
+                            con_check = gr.Checkbox(label="Kontrast Uygula")
+                            con_val = gr.Slider(0.1, 3.0, 1.5, step=0.1, label="Kontrast")
+                        with gr.Column():
+                            bri_check = gr.Checkbox(label="Parlaklık Uygula")
+                            bri_val = gr.Slider(0.1, 3.0, 1.0, step=0.1, label="Parlaklık")
                     
                     bulk_apply_btn = gr.Button("⚡ Seçili Ayarları Tümüne Uygula", variant="secondary")
 
                 gr.Markdown("### 3. Sipariş Detaylarını Düzenle")
+                with gr.Row():
+                    sel_all_btn = gr.Button("✅ Tümünü Seç", size="sm")
+                    sel_none_btn = gr.Button("⬜ Seçimi Kaldır", size="sm")
                 data_editor = gr.Dataframe(
                     headers=['selected', 'words', 'version', 'level', 'picture', 'colorized', 'contrast', 'brightness', 'save_name'],
                     datatype=["bool", "str", "number", "str", "str", "bool", "number", "number", "str"],
@@ -177,9 +195,12 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue", secondary_hue="slate"), 
                 
                 bulk_apply_btn.click(
                     apply_bulk_edit, 
-                    inputs=[data_editor, v_check, v_val, l_check, l_val, p_check, p_val, c_check, c_val], 
+                    inputs=[data_editor, v_check, v_val, l_check, l_val, p_check, p_val, c_check, c_val, con_check, con_val, bri_check, bri_val], 
                     outputs=data_editor
                 )
+                
+                sel_all_btn.click(lambda df: select_all_rows(df, True), inputs=data_editor, outputs=data_editor)
+                sel_none_btn.click(lambda df: select_all_rows(df, False), inputs=data_editor, outputs=data_editor)
 
             with gr.TabItem("⚙️ ADIM 5-10: İşlem & Kalite Kontrol"):
                 process_btn = gr.Button("🔥 Üretimi Başlat (Start Batch Process)", variant="primary", size="lg")

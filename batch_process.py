@@ -97,7 +97,7 @@ def get_advice(row, scannable_msg):
     
     return " | Tavsiye: " + ", ".join(advice)
 
-def process_items(data, assets_dir, output_dir):
+def process_items(data, assets_dir, output_dir, auto_repair=True):
     """
     Core processing loop that can be called by CLI or Gradio.
     Yields progress info.
@@ -118,7 +118,7 @@ def process_items(data, assets_dir, output_dir):
         if not words:
             continue
         
-        # --- Smart Defaults ---
+        # --- Parameters ---
         version = int(row.get('version', 1))
         level = str(row.get('level', 'H'))
         picture_name = str(row.get('picture', '')).strip()
@@ -146,6 +146,7 @@ def process_items(data, assets_dir, output_dir):
         item_report["output_file"] = save_name
         
         try:
+            # First Attempt
             ver, ecl, qr_name = amzqr.run(
                 words=words,
                 version=version,
@@ -161,7 +162,32 @@ def process_items(data, assets_dir, output_dir):
             # QC Test
             full_path = os.path.join(output_dir, qr_name)
             scanned_data, scannable_msg = test_qr_scannability(full_path)
-            advice = get_advice(row, scannable_msg)
+            
+            # Auto Repair Logic
+            if auto_repair and "❌" in scannable_msg:
+                yield f"🔄 Auto-repairing {qr_name} (Trying optimized parameters...)", None, None
+                # Optimize parameters for retry
+                new_contrast = 1.5
+                new_brightness = 1.0
+                ver, ecl, qr_name = amzqr.run(
+                    words=words,
+                    version=version,
+                    level=level,
+                    picture=picture_path,
+                    colorized=colorized,
+                    contrast=new_contrast,
+                    brightness=new_brightness,
+                    save_name=save_name,
+                    save_dir=output_dir
+                )
+                # Re-test
+                scanned_data, scannable_msg = test_qr_scannability(full_path)
+                item_report["contrast"] = new_contrast
+                item_report["brightness"] = new_brightness
+                if "✅" in scannable_msg:
+                    scannable_msg = "✅ Success (Auto-Repaired)"
+
+            advice = get_advice(item_report, scannable_msg)
             
             item_report["process_status"] = "success"
             item_report["scannable"] = scannable_msg
