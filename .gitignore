@@ -120,3 +120,9 @@ uploads/
 gif/cat_frames
 gif/*.png 
 gif/*.gif 
+
+portfolio/output
+
+portfolio/temp_gifs
+
+todolist.md
