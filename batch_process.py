@@ -25,25 +25,49 @@ def slugify(value):
 def test_qr_scannability(img_path):
     """Checks if a QR code is scannable and returns the result."""
     if not img_path or not os.path.exists(img_path):
-        return None, "Missing"
+        return None, f"❌ Missing: {os.path.basename(img_path) if img_path else 'Unknown'}"
     
     # GIF handling (OpenCV detector doesn't support GIFs directly)
     if img_path.lower().endswith('.gif'):
-        return None, "Manual Test Needed (GIF)"
+        # For GIFs, we could extract the first frame and test it
+        try:
+            cap = cv2.VideoCapture(img_path)
+            ret, frame = cap.read()
+            cap.release()
+            if ret:
+                detector = cv2.QRCodeDetector()
+                data, _, _ = detector.detectAndDecode(frame)
+                if data:
+                    return data, "✅ Success (GIF)"
+                else:
+                    return None, "⚠️ Manual Test Needed (GIF - Frame 1 Not Readable)"
+            else:
+                return None, "⚠️ Manual Test Needed (GIF - Frame Extract Error)"
+        except Exception as e:
+            return None, f"⚠️ Manual Test Needed (GIF Error: {str(e)})"
     
     try:
         img = cv2.imread(img_path)
+        if img is None:
+            return None, "❌ File Load Error"
+            
         detector = cv2.QRCodeDetector()
         data, _, _ = detector.detectAndDecode(img)
+        
+        # If standard detector fails, try some preprocessing
+        if not data:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            data, _, _ = detector.detectAndDecode(gray)
+            
         if data:
             return data, "✅ Success"
         else:
-            return None, "❌ Failed"
+            return None, "❌ Failed (Unreadable)"
     except Exception as e:
         return None, f"⚠️ Error: {str(e)}"
 
 def get_advice(row, scannable_msg):
-    """Provides advice if scannability fails."""
+    """Provides specific advice if scannability fails."""
     if "Success" in scannable_msg or "Manual" in scannable_msg:
         return ""
     
@@ -52,15 +76,24 @@ def get_advice(row, scannable_msg):
     brightness = float(row.get('brightness', 1.0))
     version = int(row.get('version', 1))
     
-    if contrast < 1.5:
-        advice.append("Kontrastı artırın (Örn: 2.0)")
-    if brightness > 1.2:
+    if "Missing" in scannable_msg:
+        return " | Hata: Dosya oluşturulamadı. Parametreleri (words, picture path) kontrol edin."
+
+    if contrast < 1.3:
+        advice.append("Kontrastı artırın (Örn: 1.5 - 2.0)")
+    elif contrast > 2.5:
+        advice.append("Kontrast çok yüksek, düşürün (Örn: 1.5)")
+        
+    if brightness > 1.3:
         advice.append("Parlaklığı azaltın (Örn: 1.0)")
-    if version > 10:
-        advice.append("Versiyonu düşürmeyi deneyin")
+    elif brightness < 0.7:
+        advice.append("Parlaklığı artırın (Örn: 1.0)")
+        
+    if version > 15:
+        advice.append("Versiyonu düşürerek yoğunluğu azaltın (Örn: 10)")
     
     if not advice:
-        advice.append("Kontrast ve Parlaklık dengesini kontrol edin")
+        advice.append("Görsel çok karmaşık olabilir, daha sade bir görsel seçin veya kontrastı 1.5 yapın.")
     
     return " | Tavsiye: " + ", ".join(advice)
 

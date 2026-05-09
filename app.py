@@ -96,67 +96,105 @@ def run_batch_ui(df_data):
     # Check for overall status
     failed_count = len([r for r in qc_reports if "❌" in r.get('scannable', '')])
     final_status = "🟢 TAMAMLANDI" if failed_count == 0 else f"🟠 {failed_count} SORUNLU"
+def apply_bulk_edit(df, v_check, v_val, l_check, l_val, p_check, p_val, c_check, c_val):
+    if df is None or df.empty:
+        return df
     
-    yield logs, images, f"{zip_path}.zip", final_status
+    new_df = df.copy()
+    for i in range(len(new_df)):
+        if v_check: new_df.at[i, 'version'] = v_val
+        if l_check: new_df.at[i, 'level'] = l_val
+        if p_check: new_df.at[i, 'picture'] = p_val
+        if c_check: new_df.at[i, 'colorized'] = c_val
+        
+    return new_df
 
 # Premium CSS
 custom_css = """
 .container { max-width: 1200px; margin: auto; }
-.header { text-align: center; margin-bottom: 2rem; background: #2c3e50; color: white; padding: 20px; border-radius: 10px; }
-.step-box { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: white; }
-.status-green { color: #27ae60; font-weight: bold; font-size: 20px; text-align: center; }
-.status-orange { color: #f39c12; font-weight: bold; font-size: 20px; text-align: center; }
+.header { text-align: center; margin-bottom: 2rem; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.step-box { border: 1px solid #eee; padding: 20px; border-radius: 12px; margin-bottom: 20px; background: #f8f9fa; }
+.status-green { color: #27ae60; font-weight: bold; }
+.status-orange { color: #f39c12; font-weight: bold; }
+.bulk-panel { background: #f1f3f5; padding: 15px; border-radius: 8px; border-left: 5px solid #ff922b; margin-bottom: 15px; }
 """
 
-with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue", secondary_hue="slate"), css=custom_css, title="Amazing QR - 11 Step Workflow") as demo:
+with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue", secondary_hue="slate"), css=custom_css, title="Amazing QR - Professional Workflow") as demo:
     with gr.Div(elem_classes="container"):
         gr.Markdown("""
         <div class="header">
             <h1>🚀 Amazing QR: Profesyonel İş Akışı</h1>
-            <p>11 Adımda Tam Kontrollü QR Kod Üretimi</p>
+            <p>Modern ve Tam Kontrollü QR Kod Üretim Merkezi</p>
         </div>
         """)
         
         with gr.Tabs() as tabs:
-            with gr.TabItem("📁 ADIM 1-2: Hazırlık"):
+            with gr.TabItem("📁 ADIM 1-2.5: Hazırlık & Yükleme"):
                 with gr.Row():
-                    with gr.Column():
-                        csv_input = gr.File(label="1. order.csv Yükle (Zorunlu)", file_types=[".csv"])
+                    with gr.Column(elem_classes="step-box"):
+                        gr.Markdown("### 1-2. Liste Yükle")
+                        csv_input = gr.File(label="order.csv Yükle (Zorunlu)", file_types=[".csv"])
                         csv_status = gr.Markdown("ℹ️ *Lütfen CSV yükleyin.*")
-                    with gr.Column():
-                        asset_input = gr.File(label="2. Assetleri Yükle (Logos/GIFs)", file_count="multiple")
+                    with gr.Column(elem_classes="step-box"):
+                        gr.Markdown("### 2.5. Assetleri Yükle")
+                        asset_input = gr.File(label="Görselleri Yükle (Logos/GIFs)", file_count="multiple")
                         asset_status = gr.Markdown("ℹ️ *Henüz asset yüklenmedi.*")
                 
-            with gr.TabItem("✍️ ADIM 3-4: Düzenleme"):
-                gr.Markdown("### 3. Siparişleri Düzenle")
+            with gr.TabItem("✍️ ADIM 3-4: Düzenleme & Kontrol"):
+                with gr.Accordion("🛠️ Toplu Düzenleme Paneli", open=False):
+                    with gr.Row(elem_classes="bulk-panel"):
+                        with gr.Column():
+                            v_check = gr.Checkbox(label="Versiyon Uygula")
+                            v_val = gr.Slider(1, 40, 1, label="Versiyon")
+                        with gr.Column():
+                            l_check = gr.Checkbox(label="Hata Seviyesi Uygula")
+                            l_val = gr.Dropdown(['L', 'M', 'Q', 'H'], value='H', label="Seviye")
+                        with gr.Column():
+                            p_check = gr.Checkbox(label="Görsel Uygula")
+                            p_val = gr.Textbox(placeholder="resim.png", label="Asset Adı")
+                        with gr.Column():
+                            c_check = gr.Checkbox(label="Renk Uygula")
+                            c_val = gr.Checkbox(value=True, label="Renklendir")
+                    
+                    bulk_apply_btn = gr.Button("⚡ Seçili Ayarları Tümüne Uygula", variant="secondary")
+
+                gr.Markdown("### 3. Sipariş Detaylarını Düzenle")
                 data_editor = gr.Dataframe(
                     headers=['selected', 'words', 'version', 'level', 'picture', 'colorized', 'contrast', 'brightness', 'save_name'],
                     datatype=["bool", "str", "number", "str", "str", "bool", "number", "number", "str"],
                     interactive=True,
-                    label="Düzenleme Tablosu",
+                    label="Düzenleme Tablosu (order.csv)",
                     type="pandas"
                 )
-                gr.Markdown("### 4. İşlem Öncesi Son Kontrol (Seçililer)")
-                final_preview = gr.Dataframe(interactive=False, label="İşleme Alınacaklar")
+                
+                gr.Markdown("### 4. İşlem Öncesi Son Kontrol")
+                final_preview = gr.Dataframe(interactive=False, label="Sadece İşlenecek Olanlar (Selected=True)")
                 
                 def update_previews(df):
                     return get_final_preview(df)
                 
                 data_editor.change(update_previews, inputs=data_editor, outputs=final_preview)
+                
+                bulk_apply_btn.click(
+                    apply_bulk_edit, 
+                    inputs=[data_editor, v_check, v_val, l_check, l_val, p_check, p_val, c_check, c_val], 
+                    outputs=data_editor
+                )
 
-            with gr.TabItem("⚙️ ADIM 5-10: İşlem & QC"):
-                process_btn = gr.Button("🔥 Üretimi Başlat (Process)", variant="primary", size="lg")
+            with gr.TabItem("⚙️ ADIM 5-10: İşlem & Kalite Kontrol"):
+                process_btn = gr.Button("🔥 Üretimi Başlat (Start Batch Process)", variant="primary", size="lg")
                 
                 with gr.Row():
                     with gr.Column(scale=1):
-                        log_output = gr.Textbox(label="5-8. İşlem Günlüğü & QC Raporu", lines=15, interactive=False)
-                        final_status_display = gr.Markdown("### Durum: Bekleniyor", elem_id="status_display")
+                        log_output = gr.Textbox(label="5-8. Süreç Raporu", lines=15, interactive=False)
+                        final_status_display = gr.Markdown("### Durum: Hazır", elem_id="status_display")
                     with gr.Column(scale=2):
-                        gallery_output = gr.Gallery(label="6. Sonuç Önizleme", columns=4, height="auto")
+                        gallery_output = gr.Gallery(label="6. QR Önizleme Galerisi", columns=4, height="auto")
                 
-            with gr.TabItem("📥 ADIM 11: İndir"):
+            with gr.TabItem("📥 ADIM 11: Paketle & İndir"):
                 gr.Markdown("### 11. Final Paketini İndir")
-                zip_output = gr.File(label="ZIP Dosyasını İndir (QRlar + order-updated.csv)")
+                gr.Markdown("İşlem tamamlandığında aşağıda beliren ZIP dosyasını indirebilirsiniz.")
+                zip_output = gr.File(label="ZIP Dosyasını İndir")
 
         # Event Bindings
         csv_input.change(handle_csv_upload, inputs=csv_input, outputs=[data_editor, csv_status])
@@ -169,8 +207,9 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue", secondary_hue="slate"), 
         )
 
         gr.Markdown("""
-        <div style="text-align: center; margin-top: 20px; color: #666;">
-            <p>© 2026 Amazing QR - Powered by OrionInsist | 11-Step Workflow Engine</p>
+        <div style="text-align: center; margin-top: 30px; color: #7f8c8d; font-size: 0.9em; border-top: 1px solid #eee; padding-top: 20px;">
+            <p>© 2026 Amazing QR Workflow Engine | OrionInsist Solutions</p>
+            <p><i>Güvenli, Hızlı ve Profesyonel QR Çözümleri</i></p>
         </div>
         """)
 
