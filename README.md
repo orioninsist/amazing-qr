@@ -1,10 +1,10 @@
-# 🚀 Amazing-QR: Sanatsal ve Toplu QR Kod Oluşturucu
+# 🚀 orioninsist QR: Sanatsal ve Toplu QR Kod Oluşturucu
 
 [![GitHub-orioninsist](https://img.shields.io/badge/GitHub-orioninsist-blue?logo=github)](https://github.com/orioninsist)
 [![License](https://img.shields.io/badge/license-GPLv3-yellow.svg)](https://github.com/orioninsist/amazing-qr/blob/master/LICENSE.md)
 
 ## 1. Proje Amacı ve Açıklaması
-Amazing-QR, standart ve sıkıcı QR kodlarını görsel bir sanat eserine dönüştüren açık kaynaklı bir araçtır. Bu proje ile sadece veri içeren kodlar değil; arka planında resim, logo veya hareketli GIF bulunan, markanıza özel ve dikkat çekici QR kodlar oluşturabilirsiniz. Özellikle pazarlama materyalleri, kurumsal kimlik çalışmaları ve dijital içerikler için tasarlanmıştır.
+orioninsist QR, standart ve sıkıcı QR kodlarını görsel bir sanat eserine dönüştüren açık kaynaklı bir araçtır. Bu proje ile sadece veri içeren kodlar değil; arka planında resim, logo veya hareketli GIF bulunan, markanıza özel ve dikkat çekici QR kodlar oluşturabilirsiniz. Özellikle pazarlama materyalleri, kurumsal kimlik çalışmaları ve dijital içerikler için tasarlanmıştır.
 
 ## 2. Proje Süreci
 Projenin geliştirme ve optimizasyon süreci aşağıdaki tarihler arasında gerçekleştirilmiştir:
@@ -18,7 +18,7 @@ Projenin geliştirme ve optimizasyon süreci aşağıdaki tarihler arasında ger
 Yerel makinenizde bağımlılık sorunlarıyla uğraşmadan çalışmanın en güvenli yolu Docker kullanmaktır.
 - **Komut:** 
   ```bash
-  docker run -p 7860:7860 -v $(pwd)/inputs:/app/inputs -v $(pwd)/output:/app/output amazing-qr
+  docker run -p 7860:7860 -v $(pwd)/inputs:/app/inputs -v $(pwd)/output:/app/output orioninsist-qr
   ```
 - **Erişim:** Tarayıcıdan `http://localhost:7860` adresine giderek modern Gradio arayüzünü kullanabilirsiniz.
 
@@ -61,6 +61,9 @@ Proje, görüntü işleme kütüphaneleri (Pillow ve OpenCV) ile QR kod üretim 
 - **Okunabilirlik:** En yüksek hata düzeltme seviyesi (H) kullanılarak karmaşık görsellerde dahi %99 başarı oranı yakalanmıştır.
 - **Performans:** Toplu işlem (Batch Processing) motoru sayesinde yüzlerce QR kod saniyeler içinde üretilebilmektedir.
 - **Kullanılabilirlik:** Docker izolasyonu sayesinde "bağımlılık hatası" riski sıfıra indirilmiştir.
+
+## 8. Credits
+This project is based on the [amzqr](https://github.com/x-python/amazing-qr) library. Specialized and optimized by [orioninsist](https://github.com/orioninsist).
 
 ---
 **Geliştirici:** [orioninsist](https://github.com/orioninsist)
