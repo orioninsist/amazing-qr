@@ -24,12 +24,14 @@ def slugify(value):
 
 def test_qr_scannability(img_path):
     """Checks if a QR code is scannable and returns the result."""
-    if not img_path or not os.path.exists(img_path):
-        return None, f"❌ Missing: {os.path.basename(img_path) if img_path else 'Unknown'}"
+    if not img_path:
+        return None, "❌ Error: No path provided"
+        
+    if not os.path.exists(img_path):
+        return None, f"❌ Missing: {os.path.basename(img_path)}"
     
     # GIF handling (OpenCV detector doesn't support GIFs directly)
     if img_path.lower().endswith('.gif'):
-        # For GIFs, we could extract the first frame and test it
         try:
             cap = cv2.VideoCapture(img_path)
             ret, frame = cap.read()
@@ -49,7 +51,7 @@ def test_qr_scannability(img_path):
     try:
         img = cv2.imread(img_path)
         if img is None:
-            return None, "❌ File Load Error"
+            return None, "❌ File Load Error (Corrupt?)"
             
         detector = cv2.QRCodeDetector()
         data, _, _ = detector.detectAndDecode(img)
@@ -57,14 +59,17 @@ def test_qr_scannability(img_path):
         # If standard detector fails, try some preprocessing
         if not data:
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            data, _, _ = detector.detectAndDecode(gray)
+            # Try CLAHE (Contrast Limited Adaptive Histogram Equalization)
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+            cl1 = clahe.apply(gray)
+            data, _, _ = detector.detectAndDecode(cl1)
             
         if data:
             return data, "✅ Success"
         else:
             return None, "❌ Failed (Unreadable)"
     except Exception as e:
-        return None, f"⚠️ Error: {str(e)}"
+        return None, f"⚠️ QC Error: {str(e)}"
 
 def get_advice(row, scannable_msg):
     """Provides specific advice if scannability fails."""
@@ -77,7 +82,7 @@ def get_advice(row, scannable_msg):
     version = int(row.get('version', 1))
     
     if "Missing" in scannable_msg:
-        return " | Hata: Dosya oluşturulamadı. Parametreleri (words, picture path) kontrol edin."
+        return " | Hata: Dosya oluşturulamadı. Kayıt dizinini ve yazma izinlerini kontrol edin."
 
     if contrast < 1.3:
         advice.append("Kontrastı artırın (Örn: 1.5 - 2.0)")
@@ -109,7 +114,6 @@ def process_items(data, assets_dir, output_dir, auto_repair=False):
     print(f"Starting batch process for {len(data)} items...")
     
     results = []
-    count = 0
     pbar = tqdm(total=len(data), desc="Processing QRs")
     
     for idx, row in enumerate(data, 1):
@@ -118,9 +122,9 @@ def process_items(data, assets_dir, output_dir, auto_repair=False):
         if not words:
             continue
         
-        # --- Parameters ---
-        version = int(row.get('version', 1))
-        level = str(row.get('level', 'H'))
+        # --- Base Parameters ---
+        initial_version = int(row.get('version', 1))
+        initial_level = str(row.get('level', 'H'))
         picture_name = str(row.get('picture', '')).strip()
         picture_path = None
         if picture_name and picture_name != 'nan':
@@ -129,8 +133,8 @@ def process_items(data, assets_dir, output_dir, auto_repair=False):
                 picture_path = None
 
         colorized = str(row.get('colorized', 'True')).lower() == 'true'
-        contrast = float(row.get('contrast', 1.0))
-        brightness = float(row.get('brightness', 1.0))
+        initial_contrast = float(row.get('contrast', 1.0))
+        initial_brightness = float(row.get('brightness', 1.0))
 
         save_name = str(row.get('save_name', '')).strip()
         if not save_name or save_name == 'nan':
@@ -138,58 +142,90 @@ def process_items(data, assets_dir, output_dir, auto_repair=False):
             slug = slugify(words) or f"qr_{idx}"
             save_name = f"{slug}{ext}"
 
-        status_msg = f"Processing [{idx}/{len(data)}]: {words}"
-        yield status_msg, None, None
+        # --- Smart Repair Loop ---
+        # We try up to 3 attempts if auto_repair is ON
+        max_attempts = 3 if auto_repair else 1
+        last_item_report = None
         
-        item_report = row.copy()
-        item_report["process_status"] = "pending"
-        item_report["output_file"] = save_name
-        
-        try:
-            # Attempt Generation
-            # If auto_repair is on and we know this item failed before, apply fixes immediately
-            current_contrast = contrast
-            current_brightness = brightness
-            
-            if auto_repair and row.get('scannable') and "❌" in row.get('scannable'):
-                 current_contrast = 1.5
-                 current_brightness = 1.0
-                 yield f"🔄 Applying Smart Repair for {save_name}...", None, None
+        for attempt in range(1, max_attempts + 1):
+            current_contrast = initial_contrast
+            current_brightness = initial_brightness
+            current_level = initial_level
+            current_version = initial_version
 
-            ver, ecl, qr_name = amzqr.run(
-                words=words,
-                version=version,
-                level=level,
-                picture=picture_path,
-                colorized=colorized,
-                contrast=current_contrast,
-                brightness=current_brightness,
-                save_name=save_name,
-                save_dir=output_dir
-            )
+            if attempt == 2:
+                # Attempt 2: Balanced improvement
+                current_contrast = 1.5
+                current_brightness = 1.0
+                current_level = 'Q'
+                yield f"🔄 [Attempt 2] Retrying with Balanced parameters for {save_name}...", None, None
+            elif attempt == 3:
+                # Attempt 3: High Contrast / Safe mode
+                current_contrast = 2.0
+                current_brightness = 1.0
+                current_level = 'H'
+                yield f"🔄 [Attempt 3] Retrying with Safe parameters for {save_name}...", None, None
+
+            status_msg = f"Processing [{idx}/{len(data)}] (Attempt {attempt}): {words}"
+            yield status_msg, None, None
             
-            # QC Test
-            full_path = os.path.join(output_dir, qr_name)
-            scanned_data, scannable_msg = test_qr_scannability(full_path)
+            item_report = row.copy()
+            item_report["process_status"] = "pending"
+            item_report["output_file"] = save_name
+            item_report["attempt"] = attempt
             
-            advice = get_advice(item_report, scannable_msg)
+            try:
+                # Generation
+                ver, ecl, qr_full_path = amzqr.run(
+                    words=words,
+                    version=current_version,
+                    level=current_level,
+                    picture=picture_path,
+                    colorized=colorized,
+                    contrast=current_contrast,
+                    brightness=current_brightness,
+                    save_name=save_name,
+                    save_dir=output_dir
+                )
+                
+                # Verify file exists
+                if not os.path.exists(qr_full_path):
+                    qr_full_path = os.path.join(output_dir, save_name)
+                
+                # QC Test
+                scanned_data, scannable_msg = test_qr_scannability(qr_full_path)
+                
+                advice = get_advice(item_report, scannable_msg)
+                
+                item_report["process_status"] = "success"
+                item_report["scannable"] = scannable_msg
+                item_report["advice"] = advice
+                item_report["scanned_data"] = scanned_data
+                item_report["contrast"] = current_contrast
+                item_report["brightness"] = current_brightness
+                item_report["level"] = current_level
+                
+                last_item_report = item_report
+
+                # If success, break the repair loop
+                if "✅" in scannable_msg or "Manual" in scannable_msg:
+                    yield f"✅ {save_name} | {scannable_msg}", qr_full_path, item_report
+                    break
+                else:
+                    if attempt == max_attempts:
+                        yield f"❌ {save_name} | {scannable_msg}", qr_full_path, item_report
             
-            item_report["process_status"] = "success"
-            item_report["scannable"] = scannable_msg
-            item_report["advice"] = advice
-            item_report["scanned_data"] = scanned_data
-            item_report["contrast"] = current_contrast
-            item_report["brightness"] = current_brightness
-            
-            count += 1
-            yield f"✅ {qr_name} | {scannable_msg}", full_path, item_report
-        except Exception as e:
-            error_msg = str(e)
-            item_report["process_status"] = "failed"
-            item_report["error"] = error_msg
-            yield f"❌ Failed: {error_msg}", None, item_report
+            except Exception as e:
+                error_msg = str(e)
+                item_report["process_status"] = "failed"
+                item_report["error"] = error_msg
+                item_report["scannable"] = f"❌ Error: {error_msg}"
+                last_item_report = item_report
+                yield f"❌ Failed: {error_msg}", None, item_report
+                if attempt == max_attempts:
+                    break
         
-        results.append(item_report)
+        results.append(last_item_report)
 
     # Save final updated CSV for internal tracking
     updated_df = pd.DataFrame(results)
@@ -212,18 +248,20 @@ def run_batch():
         print(f"Error: No order.csv found!")
         return
 
-    df = pd.read_csv(input_csv)
+    try:
+        df = pd.read_csv(input_csv)
+    except Exception as e:
+        print(f"Error reading CSV: {e}")
+        return
+
     data = df.to_dict('records')
+    selected_data = [item for item in data if str(item.get('selected', True)).lower() == 'true']
 
-    # Filter selected items
-    data = [item for item in data if str(item.get('selected', True)).lower() == 'true']
-
-    if not data:
+    if not selected_data:
         print("No items selected for processing.")
         return
 
-    # Run the generator to completion for CLI
-    for msg, file, report in process_items(data, assets_dir, output_dir):
+    for msg, file, report in process_items(selected_data, assets_dir, output_dir, auto_repair=True):
         if msg: print(msg)
 
 if __name__ == '__main__':

@@ -54,7 +54,7 @@ def get_final_preview(df):
         return pd.DataFrame()
     return df[df['selected'] == True]
 
-def run_batch_ui(df_data, auto_repair=False):
+def run_batch_ui(df_data, auto_repair=True):
     global current_reports
     if df_data is None or df_data.empty:
         yield "❌ Hata: Veri bulunamadı.", [], None, "❌ İşlem Başlatılamadı", pd.DataFrame()
@@ -64,24 +64,19 @@ def run_batch_ui(df_data, auto_repair=False):
     dest = os.path.join(INPUTS_DIR, "order.csv")
     df_data.to_csv(dest, index=False)
 
-    if not auto_repair:
-        if os.path.exists(OUTPUT_DIR):
-            shutil.rmtree(OUTPUT_DIR)
-        os.makedirs(OUTPUT_DIR)
-        selected_rows = df_data[df_data['selected'] == True].to_dict('records')
-        current_reports = []
-    else:
-        # Repair only failed items from current_reports
-        selected_rows = [r for r in current_reports if "❌" in r.get('scannable', '')]
-        if not selected_rows:
-            yield "✅ Onarılacak hatalı kod bulunamadı.", [], None, "✅ Sorun Yok", pd.DataFrame(current_reports)
-            return
+    # Clear output directory for a fresh run
+    if os.path.exists(OUTPUT_DIR):
+        shutil.rmtree(OUTPUT_DIR)
+    os.makedirs(OUTPUT_DIR)
+    
+    selected_rows = df_data[df_data['selected'] == True].to_dict('records')
+    current_reports = []
 
     if not selected_rows:
         yield "⚠️ Uyarı: Hiçbir satır seçilmedi.", [], None, "⚠️ Seçim Yok", pd.DataFrame()
         return
 
-    logs = "🚀 İşlem başlatıldı...\n" if not auto_repair else "🛠️ Akıllı Onarım başlatıldı...\n"
+    logs = "🚀 İşlem başlatıldı (Akıllı Onarım Aktif)...\n" if auto_repair else "🚀 İşlem başlatıldı...\n"
     images = []
     
     for status, img_path, report in process_items(selected_rows, ASSETS_DIR, OUTPUT_DIR, auto_repair=auto_repair):
@@ -92,13 +87,7 @@ def run_batch_ui(df_data, auto_repair=False):
             images = [os.path.join(OUTPUT_DIR, f) for f in os.listdir(OUTPUT_DIR) if f.lower().endswith(('.png', '.gif', '.jpg'))]
             images.sort()
         if report:
-            if auto_repair:
-                # Update existing report
-                for i, orp in enumerate(current_reports):
-                    if orp['output_file'] == report['output_file']:
-                        current_reports[i] = report
-            else:
-                current_reports.append(report)
+            current_reports.append(report)
         
         qc_df = pd.DataFrame(current_reports)
         yield logs, images, None, "⏳ İşleniyor...", qc_df
@@ -110,7 +99,6 @@ def run_batch_ui(df_data, auto_repair=False):
     os.makedirs(zip_path, exist_ok=True)
     full_zip_path = os.path.join(zip_path, zip_name)
     
-    # Remove extension from make_archive base_name
     shutil.make_archive(full_zip_path.replace('.zip', ''), 'zip', OUTPUT_DIR)
     
     logs += f"\n✅ Tamamlandı!\n📦 Paket hazır: {zip_name}"
@@ -243,7 +231,7 @@ with gr.Blocks(theme=gr.themes.Default(primary_hue="blue", secondary_hue="slate"
         
         process_btn.click(
             run_batch_ui, 
-            inputs=[data_editor, gr.State(False)], 
+            inputs=[data_editor, gr.State(True)], # Now defaults to auto_repair=True for best results
             outputs=[log_output, gallery_output, zip_output, final_status_display, qc_table]
         )
         
