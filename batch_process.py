@@ -27,6 +27,20 @@ try:
 except ImportError:
     pyzbar_decode = None
 
+# --- WeChatQRCode Initialization ---
+WECHAT_DETECTOR = None
+try:
+    model_dir = "models/wechat_qr"
+    detect_pro = os.path.join(model_dir, "detect.prototxt")
+    detect_caf = os.path.join(model_dir, "detect.caffemodel")
+    sr_pro = os.path.join(model_dir, "sr.prototxt")
+    sr_caf = os.path.join(model_dir, "sr.caffemodel")
+    
+    if all(os.path.exists(f) for f in [detect_pro, detect_caf, sr_pro, sr_caf]):
+        WECHAT_DETECTOR = cv2.wechat_qrcode_WeChatQRCode(detect_pro, detect_caf, sr_pro, sr_caf)
+except Exception as e:
+    print(f"⚠️ WeChatQRCode initialization failed: {e}")
+
 def test_qr_scannability(img_path):
     """Checks if a QR code is scannable and returns the result."""
     if not img_path:
@@ -51,7 +65,16 @@ def test_qr_scannability(img_path):
         if img is None:
             return None, "❌ File Load Error (Corrupt?)"
 
-    # 1. Try pyzbar (Most reliable)
+    # 1. Try WeChatQRCode (Most powerful for artistic QRs)
+    if WECHAT_DETECTOR:
+        try:
+            data, _ = WECHAT_DETECTOR.detectAndDecode(img)
+            if data and data[0]:
+                return data[0], "✅ Success (WeChatQR)"
+        except:
+            pass
+
+    # 2. Try pyzbar (Traditional reliable engine)
     if pyzbar_decode:
         try:
             decoded = pyzbar_decode(img)
@@ -61,13 +84,13 @@ def test_qr_scannability(img_path):
         except:
             pass
 
-    # 2. Try OpenCV (Fallback)
+    # 3. Try OpenCV (Standard Fallback)
     detector = cv2.QRCodeDetector()
     data, _, _ = detector.detectAndDecode(img)
     if data:
         return data, "✅ Success (OpenCV)"
 
-    # 3. Try Preprocessing + OpenCV
+    # 4. Try Preprocessing + OpenCV
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
     cl1 = clahe.apply(gray)

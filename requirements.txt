@@ -1,9 +1,9 @@
 imageio==2.31.1
 numpy==1.25.2
 Pillow==10.0.0
-pandas>=2.1.0
-gradio>=4.0.0
-opencv-python
-amzqr
-tqdm
-pyzbar
+pandas==2.1.1
+gradio==4.7.1
+opencv-contrib-python==4.8.1.78
+amzqr==1.2.3
+tqdm==4.66.1
+pyzbar==0.1.9
