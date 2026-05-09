@@ -27,7 +27,16 @@ Herhangi bir kurulum yapmadan, doğrudan tarayıcı üzerinden çalışmak için
 - **Mantık:** GitHub deposu klonlanır, kütüphaneler kurulur ve interaktif hücreler üzerinden işlemler yapılır.
 - **Link:** [Google Colab Üzerinde Çalıştır](amazing_qr_colab.ipynb)
 
-## 4. Parametre Detayları
+## 4. Varlık Senkronizasyonu (`sync_assets.sh`)
+Toplu (Batch) QR kod üretim sürecini hızlandırmak ve otomatize etmek için bu betiği kullanabilirsiniz. Özellikle çok sayıda görselle çalışırken büyük kolaylık sağlar.
+- **İşlevi:** `inputs/assets` klasörü içindeki tüm resim ve GIF dosyalarını tarar ve bunları otomatik olarak `inputs/order.csv` listesine ekler.
+- **Kullanımı:**
+  ```bash
+  bash sync_assets.sh
+  ```
+- **Avantajı:** Manuel CSV düzenleme ihtiyacını ortadan kaldırır ve hata payını düşürür.
+
+## 5. Parametre Detayları
 
 | Parametre | Açıklama | Değer Aralığı / Örnek |
 | :--- | :--- | :--- |
@@ -41,13 +50,13 @@ Herhangi bir kurulum yapmadan, doğrudan tarayıcı üzerinden çalışmak için
 | `-con` | Görselin kontrastını ayarlar. | Varsayılan 1.0 |
 | `-bri` | Görselin parlaklığını ayarlar. | Varsayılan 1.0 |
 
-## 5. Sonuç ve Çıktılar
+## 6. Sonuç ve Çıktılar
 İşlem tamamlandığında projenin `output/` klasöründe şu sonuçlar elde edilir:
 - **Sanatsal QR Kodlar:** Belirlediğiniz resimle bütünleşmiş yüksek kaliteli `.png` veya `.jpg` dosyaları.
 - **Hareketli QR Kodlar:** GIF arka planlı, dinamik ve okunaklı `.gif` dosyaları.
 - **Analiz Raporu:** Toplu işlemlerde üretilen kodların okunabilirlik durumunu gösteren `report.json`.
 
-## 6. Proje Analizi
+## 7. Proje Analizi
 Proje, görüntü işleme kütüphaneleri (Pillow ve OpenCV) ile QR kod üretim standartlarını birleştirir. Yapılan analizler sonucunda:
 - **Okunabilirlik:** En yüksek hata düzeltme seviyesi (H) kullanılarak karmaşık görsellerde dahi %99 başarı oranı yakalanmıştır.
 - **Performans:** Toplu işlem (Batch Processing) motoru sayesinde yüzlerce QR kod saniyeler içinde üretilebilmektedir.
