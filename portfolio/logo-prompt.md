@@ -41,3 +41,29 @@ developer-qr-automation-brand.png ++
 futuristic-qr-code-tech-logo.png ++
 minimalist-orbit-qr-logo.png ++
 professional-qr-brand-design.png ++
+
+
+
+# Bionluk Marka Konsepti 1 — Profesyonel Freelancer Kimliği (Logo & GIF)
+
+**Logo Promptu:**
+"Bionluk" markası için modern, minimalist ve güven veren bir freelancer logosu tasarla. Tasarımda canlı bir yeşil (emerald/teal) ve beyaz renk paleti kullan. Bir kalem ucu veya dijital imleç ile stilize edilmiş bir QR kod karesini birleştir. Logo, temiz vektör stilinde, yüksek kontrastlı, sade ve profesyonel olmalı. Arka plan şeffaf, 3D efekt yok, gölge yok, sadece "Bionluk" metni ve ikonik sembol merkezde.
+
+**GIF Promptu:**
+Siyah beyaz standart bir QR kodun, yumuşak bir dijital dalgalanma ile "Bionluk" yeşili renklerine büründüğü ve merkezinde profesyonel bir logonun belirdiği kısa, sonsuz döngü bir animasyon oluştur. Arka planda hafifçe hareket eden dijital ağ (grid) çizgileri olsun. Temiz, kurumsal ve modern bir teknoloji estetiği kullan. Kare format, 1:1.
+
+# Bionluk Marka Konsepti 2 — Yaratıcı Dijital Sanat (Logo & GIF)
+
+**Logo Promptu:**
+"Bionluk" markası için yaratıcılığı ve dijital sanatı temsil eden sanatsal bir logo tasarla. QR kod piksellerini bir boya fırçası darbesi veya renkli bir piksel patlaması ile harmanla. Renkler canlı ve enerjik olmalı. Modern SaaS kimliğine uygun, hem GitHub hem de freelance platform profil resmi olarak kullanılabilir. Vektör tarzı, şeffaf arka plan, kalabalık olmayan temiz kompozisyon.
+
+**GIF Promptu:**
+"Bionluk" markası için sanatsal bir QR kod animasyonu hazırla. QR kodun kareleri renkli pikseller halinde havada süzülerek birleşsin ve scannable (taranabilir) şık bir tasarım oluştursun. Geçişler pürüzsüz ve akıcı olmalı. Marka ismi "Bionluk" animasyonun sonunda zarifçe belirsin. Yüksek kaliteli, pazarlama odaklı, göz alıcı sanatsal döngü.
+
+# Bionluk Marka Konsepti 3 — Hız ve Otomasyon (Logo & GIF)
+
+**Logo Promptu:**
+"Bionluk" için hız, otomasyon ve yazılım mühendisliğini temsil eden teknik bir logo tasarla. Bir roket simgesi veya hız çizgilerini stilize bir QR kod ızgarasıyla birleştir. Siber-teknoloji estetiği, keskin kenarlar, koyu mod uyumlu, minimalist ve güçlü bir duruş. Docker ve CLI araçlarını çağrıştıran endüstriyel ama modern bir tasarım. Sadece "Bionluk" yazısı ve ana sembol.
+
+**GIF Promptu:**
+Bir terminal ekranından hızla akan kod satırlarının birleşerek "Bionluk" markalı bir QR koda dönüştüğü teknolojik bir GIF animasyonu oluştur. Veri akışını temsil eden ışık çizgileri ve dijital bir parıltı ekle. Hızlı üretim ve otomasyon vurgusu yapacak dinamik bir tempo kullan. Kusursuz döngü, yüksek çözünürlük, profesyonel teknoloji demosu tarzı.
